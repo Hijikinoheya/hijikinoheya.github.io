@@ -1,11 +1,81 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ホーム</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+            font-size: 28px;
+        }
+        p {
+            color: #666;
+            font-size: 18px;
+        }
+        footer {
+            background-color: #f4f4f4;
+            padding: 20px;
+            text-align: center;
+        }
+        .social-links {
+            margin-top: 10px;
+            text-align: center;
+        }
+        .social-links a {
+            display: inline-block;
+            margin: 0 10px;
+            color: #333;
+            text-decoration: none;
+            font-size: 24px;
+        }
+        .social-links img {
+            width: 32px;
+            height: 32px;
+        }
+        .contact-link {
+            display: block;
+            margin-top: 20px;
+            color: #333;
+            text-decoration: none;
+            font-size: 18px;
+        }
+        .introduction {
+            margin-top: 40px;
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
-    <h1>Hello!</h1>
+    <link rel="icon" type="image/png" href="icon.png">
+    <div class="introduction">
+        <h2>自己紹介</h2>
+        <p>初めまして、プログラミングエンジニアの私です。<br>
+            まあ、プログラミングエンジニアと言っていますが、<br>
+            ほとんどごみアプリを作っています。</p>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="social-links">
+                <a href="https://github.com/Hijikinoheya" target="_blank"><img src="./icon/github-icon.png" alt="GitHub"></a>
+                <a href="https://twitter.com/hijikinoheya" target="_blank"><img src="./icon/twitter-icon.png" alt="Twitter"></a>
+                <a href="https://www.youtube.com/@hijikinoheya" target="_blank"><img src="./icon/youtube-icon.png" alt="YouTube"></a>
+                <div class="container">
+                    <a href="contact.html" class="contact-link">お問い合わせ</a>
+                </div>
+            
+            </div>
+        </div>
+    </footer>
 </body>
 </html>
