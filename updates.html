@@ -1,12 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>ひじきの部屋 - お問い合わせ</title>
-    <style> 
-    </style>
+    <title>ひじきの部屋 - 更新履歴</title>
     <link rel="stylesheet" href="./css/footer.css">
     <link rel="stylesheet" href="./css/headder.css">
-    <link rel="stylesheet" href="./css/contact.css">
     <header>
         <h1>ひじきの部屋</h1>
         <nav>
@@ -20,25 +17,27 @@
     </header>
 </head>
 <body>
+    <!-- ヘッダーをインクルード -->
     <div class="container">
-        <h1>お問い合わせ</h1>
-        <p>以下のフォームに必要事項を入力してください。</p>
-        <form action="submit.php" method="POST">
-            <label for="name">お名前</label>
-            <input type="text" id="name" name="name" required>
+        <h2>更新履歴</h2>
 
-            <label for="email">メールアドレス</label>
-            <input type="email" id="email" name="email" required>
+        <table>
+            <tr>
+                <th>日付</th>
+                <th>バージョン</th>
+                <th>内容</th>
+            </tr>
+            <tr>
+                <td>2023/09/09</td>
+                <td>1.0.0</td>
+                <td>初版リリース</td>
+            </tr>
 
-            <label for="message">メッセージ</label>
-            <textarea id="message" name="message" rows="6" required></textarea>
+            <!-- 追加の行をここに追記 -->
+        </table>
 
-            <button type="submit">送信</button>
-        </form>
-        <form action="./index.html">
-            <button>戻る</button>
-        </form>
     </div>
+
     <footer>
         <div class="container">
             <div class="social-links">

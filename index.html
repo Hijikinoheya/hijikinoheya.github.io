@@ -1,59 +1,21 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>ホーム</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-        }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            text-align: center;
-        }
-        h1 {
-            color: #333;
-            font-size: 28px;
-        }
-        p {
-            color: #666;
-            font-size: 18px;
-        }
-        footer {
-            background-color: #f4f4f4;
-            padding: 20px;
-            text-align: center;
-        }
-        .social-links {
-            margin-top: 10px;
-            text-align: center;
-        }
-        .social-links a {
-            display: inline-block;
-            margin: 0 10px;
-            color: #333;
-            text-decoration: none;
-            font-size: 24px;
-        }
-        .social-links img {
-            width: 32px;
-            height: 32px;
-        }
-        .contact-link {
-            display: block;
-            margin-top: 20px;
-            color: #333;
-            text-decoration: none;
-            font-size: 18px;
-        }
-        .introduction {
-            margin-top: 40px;
-            text-align: center;
-        }
-    </style>
+    <title>ひじきの部屋 - ホーム</title>
+    <link rel="stylesheet" href="./css/headder.css">
+    <link rel="stylesheet" href="./css/footer.css">
+    <link rel="stylesheet" href="./css/index.css">
+    <header>
+        <h1>ひじきの部屋</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">ホーム</a></li>
+                <li><a href="apps.html">作ったアプリ一覧</a></li>
+                <li><a href="contact.html">お問い合わせ</a></li>
+                <li><a href="updates.html">更新履歴</a></li>
+            </ul>
+        </nav>
+    </header>
 </head>
 <body>
     <link rel="icon" type="image/png" href="icon.png">
@@ -63,19 +25,16 @@
             まあ、プログラミングエンジニアと言っていますが、<br>
             ほとんどごみアプリを作っています。</p>
     </div>
-
+    <!--フッター-->
     <footer>
         <div class="container">
             <div class="social-links">
                 <a href="https://github.com/Hijikinoheya" target="_blank"><img src="./icon/github-icon.png" alt="GitHub"></a>
                 <a href="https://twitter.com/hijikinoheya" target="_blank"><img src="./icon/twitter-icon.png" alt="Twitter"></a>
                 <a href="https://www.youtube.com/@hijikinoheya" target="_blank"><img src="./icon/youtube-icon.png" alt="YouTube"></a>
-                <div class="container">
-                    <a href="contact.html" class="contact-link">お問い合わせ</a>
-                </div>
-            
             </div>
         </div>
     </footer>
+    <!--終わり-->
 </body>
 </html>
