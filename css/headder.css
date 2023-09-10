@@ -2,7 +2,7 @@
 
 header {
     background-color: #909090;
-    color: #fff;
+    color: #fefefe;
     padding: 20px;
 }
 
@@ -14,7 +14,7 @@ header {
 
 h1 {
     margin: 0;
-    color: #484848;  /* タイトルロゴの色を設定 */
+    color: #191212;  /* タイトルロゴの色を設定 */
 }
 
 nav ul {
@@ -29,8 +29,9 @@ nav ul li {
 }
 
 nav ul li a {
-    color: #f8f4f4;
+    color: #000000;
     text-decoration: none;
+    font-weight: bold;
 }
 
 nav ul li a:hover {
