@@ -18,3 +18,7 @@ p {
     color: #666;
     font-size: 18px;
 }
+
+.pre {
+    background-color: black;
+}
