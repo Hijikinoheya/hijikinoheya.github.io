@@ -5,63 +5,41 @@
     <meta name="viewport" content="width=device-width">
     <meta charset="UTF-8">
     <link rel="icon" type="image/png" href="../favicon.png">
-    <title>Communication-Software-SSH-の使い方</title>
+    <title>HOW TO USE IT.</title>
 </head>
 <body>
-    <h1>Communication-Software-SSH-の使い方</h1>
+    <h1>How to use Communication-Software-SSH-</h1>
 
-    <h2>使い方ガイド</h2>
-    <p>Communication-Software-SSH-の使い方に関する詳細なガイドを以下に示します。</p>
+    <h2>How to Use Guide</h2>
+    <p>A detailed guide on how to use Communication-Software-SSH-is provided below.</p>
     <ul>
-        <li>ステップ 1: Githubからダウンロードします。</li>
-        <li>ステップ 2: zipファイルを解凍します。</li>
-        <li>ステップ 3: main.pyの内容を編集します。</li>
+        <li>Step 1: Download from Github.</li>
+        <li>Step 2: Extract the zip file.</li>
+        <li>Step 3: Edit the contents of main.py.</li>
 
-        <li>import paramiko
-            import logging.config
-            
-            logging.config.fileConfig("./conf/logging.conf")
-            logger = logging.getLogger()
-            
-            #logger.debug("")
-            logger.warning("This Version are Beta.")
-            #logger.error("")
-            logger.info("Hello! This app version are 0.13")
-            
+            <br>
             with paramiko.SSHClient() as client:
+            <br>
                 # Server info
+                <br>
                 HOSTNAME = ''
+                <br>
                 USERNAME = ''
+                <br>
                 KEY_FILENAME = ''
+                <br>
                 PASSWORD = ''
+                <br>
                 LINUX_COMMAND = ''
-            
-                # Start SSH
-                client = paramiko.SSHClient()
-                client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            
-                # Mode of passwd
-                # If you need, comment out to use this problem.
-                # client.connect(hostname=HOSTNAME, port=22, username=USERNAME, password=PASSWORD)
-            
-                # SSH keyfile
-                client.connect(hostname=HOSTNAME, port=22, username=USERNAME, key_filename=KEY_FILENAME)
-                # thrown command
-                stdin, stdout, stderr = client.exec_command(LINUX_COMMAND)
-            
-                # End of connection.
-                for line in stdout:
-                    print(line, end='')
-            
+                <br>
             </li>
     </ul>
-    <h2><font color="red">※現在は開発を終了しています。</font></h2>
 <br>
 
 
 </form>
 <form action="../apps.html">
-    <button>戻る</button>
+    <button>Go Back</button>
 </form>
 </body>
 </html>
