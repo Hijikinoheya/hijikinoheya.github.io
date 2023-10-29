@@ -1,0 +1,19 @@
+# サーバー設定の例
+
+# ポート番号の設定
+port <- 8080
+
+# サーバー起動時の処理
+server_start <- function() {
+  # サーバーの起動処理を記述
+  print("Server started successfully.")
+}
+
+# サーバー停止時の処理
+server_stop <- function() {
+  # サーバーの停止処理を記述
+  print("Server stopped.")
+}
+
+# サーバーの起動
+server_start()
