@@ -1,0 +1,12 @@
+p {
+    /* 真ん中寄せ */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+h1{
+        /* 真ん中寄せ */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+}
