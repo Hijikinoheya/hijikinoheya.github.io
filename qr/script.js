@@ -1,17 +1,17 @@
 document.addEventListener("DOMContentLoaded", function () {
     function onScanSuccess(decodedText, decodedResult) {
-        // Create a new list item with the decoded text
+        // 新しいリストアイテムを作成して結果を表示
         let listItem = document.createElement('li');
         listItem.innerText = `QR Code Result: ${decodedText}`;
-        
-        // Append the list item to the results list
+
+        // リストに新しいリストアイテムを追加
         document.getElementById('results').appendChild(listItem);
-        
+
         console.log(`Scan result: ${decodedText}`, decodedResult);
     }
 
     function onScanFailure(error) {
-        // Handle scan failure, usually better to ignore and keep scanning.
+        // スキャンの失敗を処理（通常は無視してスキャンを続行）
         console.warn(`QR Code scan error: ${error}`);
     }
 
