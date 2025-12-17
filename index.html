@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webアプリケーション集 - Team Hijikinoheya</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans JP', 'Hiragino Kaku Gothic ProN', Meiryo, sans-serif;
+            background: linear-gradient(135deg, #0c2461 0%, #1e3799 20%, #4a69bd 100%);
+            color: #333;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 20px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.2);
+            z-index: -1;
+        }
+
+        h1 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2.8rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            letter-spacing: 1px;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 700px;
+            margin: 0 auto 20px;
+        }
+
+        .team-name {
+            display: inline-block;
+            background-color: rgba(255, 255, 255, 0.2);
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-top: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        .year {
+            color: #ffd700;
+            font-weight: 700;
+        }
+
+        main {
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin-top: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        }
+
+        .intro {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid #eaeaea;
+        }
+
+        .intro h2 {
+            color: #0c2461;
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+
+        .intro p {
+            max-width: 800px;
+            margin: 0 auto;
+            font-size: 1.1rem;
+            color: #555;
+        }
+
+        .apps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .app-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            border: 1px solid #eaeaea;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .app-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+            border-color: #4a69bd;
+        }
+
+        .app-icon {
+            height: 180px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            color: white;
+        }
+
+        .flashcard-icon {
+            background: linear-gradient(to right, #1a237e, #3949ab);
+        }
+
+        .generator-icon {
+            background: linear-gradient(to right, #0d47a1, #1976d2);
+        }
+
+        .coming-soon-icon {
+            background: linear-gradient(to right, #6a1b9a, #8e24aa);
+        }
+
+        .app-content {
+            padding: 25px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .app-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #0c2461;
+        }
+
+        .app-description {
+            color: #666;
+            margin-bottom: 20px;
+            flex-grow: 1;
+        }
+
+        .app-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .tag {
+            background-color: #f0f4ff;
+            color: #4a69bd;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .app-link {
+            display: block;
+            text-align: center;
+            background: linear-gradient(to right, #0c2461, #1e3799);
+            color: white;
+            padding: 14px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+            margin-top: auto;
+        }
+
+        .app-link:hover {
+            background: linear-gradient(to right, #1e3799, #4a69bd);
+            box-shadow: 0 5px 15px rgba(30, 55, 153, 0.4);
+        }
+
+        .app-link i {
+            margin-right: 10px;
+        }
+
+        .coming-soon-link {
+            background: linear-gradient(to right, #6a1b9a, #8e24aa);
+            cursor: not-allowed;
+            opacity: 0.8;
+        }
+
+        .coming-soon-link:hover {
+            background: linear-gradient(to right, #6a1b9a, #8e24aa);
+            box-shadow: none;
+            transform: none;
+        }
+
+        .instructions {
+            background-color: #f8f9ff;
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 40px;
+            border-left: 5px solid #4a69bd;
+        }
+
+        .instructions h3 {
+            color: #0c2461;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .instructions ol {
+            margin-left: 20px;
+        }
+
+        .instructions li {
+            margin-bottom: 10px;
+            color: #555;
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px 20px;
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 40px;
+        }
+
+        .copyright {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background-color: #4a69bd;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            text-decoration: none;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s;
+            z-index: 100;
+        }
+
+        .back-to-top:hover {
+            background-color: #1e3799;
+            transform: translateY(-5px);
+        }
+
+        /* レスポンシブデザイン */
+        @media (max-width: 992px) {
+            .apps-grid {
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            }
+            
+            h1 {
+                font-size: 2.3rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            header {
+                padding: 30px 15px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            main {
+                padding: 25px;
+            }
+            
+            .apps-grid {
+                grid-template-columns: 1fr;
+                gap: 25px;
+            }
+            
+            .app-icon {
+                height: 150px;
+                font-size: 3.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .subtitle {
+                font-size: 1rem;
+            }
+            
+            .app-content {
+                padding: 20px;
+            }
+            
+            .app-title {
+                font-size: 1.4rem;
+            }
+            
+            .app-link {
+                padding: 12px;
+                font-size: 1rem;
+            }
+        }
+
+        /* アニメーション */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+
+        .delay-1 {
+            animation-delay: 0.2s;
+        }
+
+        .delay-2 {
+            animation-delay: 0.4s;
+        }
+
+        .delay-3 {
+            animation-delay: 0.6s;
+        }
+
+        /* 追加リンク用スタイル */
+        .add-link-btn {
+            display: inline-block;
+            background-color: #f0f4ff;
+            color: #4a69bd;
+            padding: 10px 20px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            margin-top: 20px;
+            border: 2px dashed #4a69bd;
+            transition: all 0.3s;
+        }
+
+        .add-link-btn:hover {
+            background-color: #e1e8ff;
+            border-style: solid;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Webアプリケーション集</h1>
+            <p class="subtitle">効率的な学習と作業のためのツール集。随時新しいアプリを追加予定です。</p>
+            <div class="team-name">Team Hijikinoheya <span class="year">2025</span></div>
+        </header>
+
+        <main>
+            <section class="intro">
+                <h2>利用可能なアプリケーション</h2>
+                <p>以下のWebアプリは、学習効率向上や作業支援を目的として開発されています。各アプリは独立して動作し、新しいタブで開きます。</p>
+            </section>
+
+            <div class="apps-grid">
+                <!-- フラッシュカードアプリ -->
+                <div class="app-card fade-in-up">
+                    <div class="app-icon flashcard-icon">
+                        <i class="fas fa-layer-group"></i>
+                    </div>
+                    <div class="app-content">
+                        <h3 class="app-title">受験生向けフラッシュカード</h3>
+                        <p class="app-description">
+                            英単語学習に特化したフラッシュカードアプリ。正解率の記録、苦手単語の復習、学習時間の計測など、受験生向けの機能を搭載しています。
+                        </p>
+                        <div class="app-tags">
+                            <span class="tag">学習支援</span>
+                            <span class="tag">単語学習</span>
+                            <span class="tag">受験対策</span>
+                            <span class="tag">効率学習</span>
+                        </div>
+                        <a href="./flashcard/index.html" class="app-link" target="_blank">
+                            <i class="fas fa-external-link-alt"></i> アプリを開く
+                        </a>
+                    </div>
+                </div>
+
+                <!-- JSON生成ツール -->
+                <div class="app-card fade-in-up delay-1">
+                    <div class="app-icon generator-icon">
+                        <i class="fas fa-table"></i>
+                    </div>
+                    <div class="app-content">
+                        <h3 class="app-title">表形式JSONデータ生成ツール</h3>
+                        <p class="app-description">
+                            フラッシュカード用のデータを簡単に作成できるツール。表形式で単語を入力し、JSON形式でエクスポートできます。例文の追加も可能です。
+                        </p>
+                        <div class="app-tags">
+                            <span class="tag">データ作成</span>
+                            <span class="tag">JSON生成</span>
+                            <span class="tag">表形式入力</span>
+                            <span class="tag">教育ツール</span>
+                        </div>
+                        <a href="./flashcard/generate_json.html" class="app-link" target="_blank">
+                            <i class="fas fa-external-link-alt"></i> ツールを開く
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 追加予定のアプリ1 -->
+                <div class="app-card fade-in-up delay-2">
+                    <div class="app-icon coming-soon-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <div class="app-content">
+                        <h3 class="app-title">暗記支援ツール（開発中）</h3>
+                        <p class="app-description">
+                            科学的な暗記法に基づいた復習スケジュールを自動生成するツール。忘却曲線理論を応用し、最適なタイミングで復習を促します。
+                        </p>
+                        <div class="app-tags">
+                            <span class="tag">暗記支援</span>
+                            <span class="tag">復習管理</span>
+                            <span class="tag">学習科学</span>
+                            <span class="tag">開発中</span>
+                        </div>
+                        <a href="#" class="app-link coming-soon-link">
+                            <i class="fas fa-clock"></i> 近日公開予定
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 追加予定のアプリ2 -->
+                <div class="app-card fade-in-up delay-3">
+                    <div class="app-icon coming-soon-icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <div class="app-content">
+                        <h3 class="app-title">学習進捗管理ダッシュボード（計画中）</h3>
+                        <p class="app-description">
+                            各学習ツールの進捗を一元管理するダッシュボード。学習時間、達成率、目標までの進捗などを視覚的に把握できます。
+                        </p>
+                        <div class="app-tags">
+                            <span class="tag">進捗管理</span>
+                            <span class="tag">ダッシュボード</span>
+                            <span class="tag">学習分析</span>
+                            <span class="tag">計画中</span>
+                        </div>
+                        <a href="#" class="app-link coming-soon-link">
+                            <i class="fas fa-clock"></i> 計画中
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <section class="instructions">
+                <h3><i class="fas fa-info-circle"></i> 使い方と注意点</h3>
+                <ol>
+                    <li>各アプリは独立して動作します。リンクをクリックすると新しいタブで開きます。</li>
+                    <li>フラッシュカードアプリを使用するには、まずJSON生成ツールで学習データを作成することをお勧めします。</li>
+                    <li>作成したJSONデータは、フラッシュカードアプリで「ファイルを選択」から読み込むことができます。</li>
+                    <li>ブラウザの戻るボタンではなく、各アプリ内の戻るボタンを使用してください。</li>
+                    <li>データはローカル（お使いのブラウザ）に保存されます。別のブラウザや端末ではデータが引き継がれません。</li>
+                </ol>
+                
+                <a href="#" class="add-link-btn" id="suggest-app-btn">
+                    <i class="fas fa-lightbulb"></i> 追加してほしいアプリを提案する
+                </a>
+            </section>
+        </main>
+
+        <footer>
+            <p>© Team Hijikinoheya 2025 - Webアプリケーション集</p>
+            <p class="copyright">すべてのアプリは教育・学習支援を目的として開発されています。</p>
+        </footer>
+    </div>
+
+    <a href="#" class="back-to-top" id="back-to-top">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+
+    <script>
+        // バックトップボタン
+        const backToTopBtn = document.getElementById('back-to-top');
+        
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTopBtn.style.display = 'flex';
+            } else {
+                backToTopBtn.style.display = 'none';
+            }
+        });
+        
+        backToTopBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+        
+        // アプリ提案ボタン
+        document.getElementById('suggest-app-btn').addEventListener('click', (e) => {
+            e.preventDefault();
+            const appIdeas = [
+                "単語帳から単語クイズを自動生成するツール",
+                "学習時間を記録・分析するポモドーロタイマー",
+                "PDFからテキストを抽出してフラッシュカード化するツール",
+                "グループで単語帳を共有・編集できるコラボレーションツール",
+                "発音チェックができる英会話学習ツール",
+                "図や数式も含めた理科・数学用フラッシュカード",
+                "歴史の年表をインタラクティブに学習するツール",
+                "プログラミング学習用のコードフラッシュカード"
+            ];
+            
+            const randomIdea = appIdeas[Math.floor(Math.random() * appIdeas.length)];
+            
+            alert(`アプリ提案のご意見ありがとうございます！\n\n参考アイデア：${randomIdea}\n\n実際のご要望は、お手数ですが開発者まで直接お伝えください。`);
+        });
+        
+        // アニメーションのトリガー
+        document.addEventListener('DOMContentLoaded', () => {
+            // カードに遅延アニメーションを適用
+            const cards = document.querySelectorAll('.app-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.animationDelay = `${index * 0.2}s`;
+                card.classList.add('fade-in-up');
+            });
+            
+            // 少し遅れてアニメーションを開始
+            setTimeout(() => {
+                cards.forEach(card => {
+                    card.style.opacity = '1';
+                });
+            }, 300);
+        });
+        
+        // 外部リンクを新しいタブで開くことを確認
+        document.querySelectorAll('a[href^="http"]').forEach(link => {
+            if (!link.getAttribute('target')) {
+                link.setAttribute('target', '_blank');
+                link.setAttribute('rel', 'noopener noreferrer');
+            }
+        });
+    </script>
+</body>
+</html>

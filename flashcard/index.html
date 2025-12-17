@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>フラッシュカード学習アプリ</title>
+    <title>受験生向けフラッシュカード学習アプリ</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         * {
             margin: 0;
@@ -14,26 +15,27 @@
         }
 
         body {
-            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            background: linear-gradient(135deg, #1a237e 0%, #283593 100%);
             min-height: 100vh;
             padding: 20px;
             color: #333;
         }
 
         .container {
-            max-width: 800px;
+            max-width: 1000px;
             margin: 0 auto;
-            background-color: rgba(255, 255, 255, 0.95);
+            background-color: rgba(255, 255, 255, 0.98);
             border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
             overflow: hidden;
         }
 
         header {
-            background: linear-gradient(to right, #4a00e0, #8e2de2);
+            background: linear-gradient(to right, #1a237e, #3949ab);
             color: white;
             padding: 25px 20px;
             text-align: center;
+            position: relative;
         }
 
         h1 {
@@ -48,6 +50,40 @@
         .subtitle {
             opacity: 0.9;
             font-size: 1rem;
+            margin-bottom: 5px;
+        }
+
+        .copyright {
+            font-size: 0.8rem;
+            opacity: 0.7;
+            margin-top: 5px;
+        }
+
+        .stats-bar {
+            display: flex;
+            justify-content: space-between;
+            background-color: #f5f5f5;
+            padding: 12px 20px;
+            border-bottom: 1px solid #e0e0e0;
+            font-weight: 600;
+            color: #555;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .stat-value {
+            color: #1a237e;
+            font-weight: 700;
+        }
+
+        .timer {
+            color: #d32f2f;
+            font-weight: 700;
         }
 
         .app-section {
@@ -68,20 +104,20 @@
         .file-input-wrapper {
             margin: 20px 0;
             padding: 20px;
-            border: 2px dashed #8e2de2;
+            border: 2px dashed #3949ab;
             border-radius: 15px;
             background-color: #f8f9ff;
             transition: all 0.3s;
         }
 
         .file-input-wrapper:hover {
-            background-color: #eef2ff;
-            border-color: #4a00e0;
+            background-color: #e8eaf6;
+            border-color: #1a237e;
         }
 
         .file-label {
             display: inline-block;
-            background: linear-gradient(to right, #4a00e0, #8e2de2);
+            background: linear-gradient(to right, #1a237e, #3949ab);
             color: white;
             padding: 12px 25px;
             border-radius: 50px;
@@ -93,7 +129,7 @@
 
         .file-label:hover {
             transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(142, 45, 226, 0.4);
+            box-shadow: 0 5px 15px rgba(57, 73, 171, 0.4);
         }
 
         .file-name {
@@ -103,7 +139,7 @@
         }
 
         .default-data-btn {
-            background: linear-gradient(to right, #00b09b, #96c93d);
+            background: linear-gradient(to right, #00796b, #0097a7);
             color: white;
             border: none;
             padding: 12px 25px;
@@ -116,7 +152,7 @@
 
         .default-data-btn:hover {
             transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(0, 176, 155, 0.4);
+            box-shadow: 0 5px 15px rgba(0, 151, 167, 0.4);
         }
 
         /* 設定セクション */
@@ -154,9 +190,9 @@
         }
 
         .mode-btn.active {
-            background: linear-gradient(to right, #4a00e0, #8e2de2);
+            background: linear-gradient(to right, #1a237e, #3949ab);
             color: white;
-            box-shadow: 0 5px 15px rgba(142, 45, 226, 0.3);
+            box-shadow: 0 5px 15px rgba(57, 73, 171, 0.3);
         }
 
         .mode-btn:hover:not(.active) {
@@ -164,10 +200,64 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
 
+        /* アニメーション設定 */
+        .animation-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px 0;
+            gap: 15px;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background-color: #4caf50;
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(30px);
+        }
+
         /* フラッシュカードセクション */
         .card-container {
             perspective: 1000px;
-            height: 350px;
+            height: 380px;
             margin: 20px 0 30px;
         }
 
@@ -179,7 +269,7 @@
             transition: transform 0.8s;
             cursor: pointer;
             border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
         }
 
         .card.flipped {
@@ -206,22 +296,39 @@
         }
 
         .card-back {
-            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
             color: #333;
             transform: rotateY(180deg);
+        }
+
+        .card.correct {
+            box-shadow: 0 0 0 4px #4caf50, 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .card.incorrect {
+            box-shadow: 0 0 0 4px #f44336, 0 15px 30px rgba(0, 0, 0, 0.15);
         }
 
         .card-word {
             font-size: 2.8rem;
             font-weight: 700;
             margin-bottom: 15px;
-            color: #4a00e0;
+            color: #1a237e;
+        }
+
+        .card-example {
+            font-size: 1.1rem;
+            color: #555;
+            margin-top: 20px;
+            font-style: italic;
+            max-width: 90%;
+            line-height: 1.5;
         }
 
         .card-hint {
             font-size: 1rem;
             color: #666;
-            margin-top: 10px;
+            margin-top: 15px;
             font-style: italic;
         }
 
@@ -229,7 +336,52 @@
             font-size: 2.2rem;
             font-weight: 700;
             margin-bottom: 15px;
-            color: #d31027;
+            color: #d32f2f;
+        }
+
+        /* 正解/不正解ボタン */
+        .answer-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 25px 0;
+            flex-wrap: wrap;
+        }
+
+        .answer-btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            min-width: 180px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        #correct-btn {
+            background: linear-gradient(to right, #4caf50, #2e7d32);
+            color: white;
+        }
+
+        #correct-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(76, 175, 80, 0.3);
+        }
+
+        #incorrect-btn {
+            background: linear-gradient(to right, #f44336, #c62828);
+            color: white;
+        }
+
+        #incorrect-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(244, 67, 54, 0.3);
         }
 
         /* コントロール */
@@ -243,7 +395,7 @@
         }
 
         .nav-btn {
-            background: linear-gradient(to right, #4a00e0, #8e2de2);
+            background: linear-gradient(to right, #1a237e, #3949ab);
             color: white;
             border: none;
             padding: 12px 20px;
@@ -261,15 +413,15 @@
 
         .nav-btn:hover {
             transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(142, 45, 226, 0.4);
+            box-shadow: 0 5px 15px rgba(57, 73, 171, 0.4);
         }
 
         .nav-btn#prev-btn {
-            background: linear-gradient(to right, #8A2BE2, #9370DB);
+            background: linear-gradient(to right, #5c6bc0, #7986cb);
         }
 
         .nav-btn#flip-btn {
-            background: linear-gradient(to right, #00b09b, #96c93d);
+            background: linear-gradient(to right, #00796b, #0097a7);
         }
 
         .progress {
@@ -280,18 +432,338 @@
         }
 
         .progress-bar {
-            height: 8px;
+            height: 10px;
             background-color: #e0e0e0;
-            border-radius: 4px;
+            border-radius: 5px;
             margin-top: 10px;
             overflow: hidden;
         }
 
         .progress-fill {
             height: 100%;
-            background: linear-gradient(to right, #4a00e0, #8e2de2);
+            background: linear-gradient(to right, #1a237e, #3949ab);
             width: 0%;
             transition: width 0.3s;
+        }
+
+        /* 結果セクション */
+        .results {
+            background-color: #f8f9ff;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .results h2 {
+            color: #1a237e;
+            margin-bottom: 20px;
+        }
+
+        .result-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .result-stat {
+            background-color: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .result-stat .value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 10px 0;
+        }
+
+        .result-stat.correct .value {
+            color: #4caf50;
+        }
+
+        .result-stat.incorrect .value {
+            color: #f44336;
+        }
+
+        .result-stat.time .value {
+            color: #3949ab;
+        }
+
+        .result-stat.accuracy .value {
+            color: #9c27b0;
+        }
+
+        /* 履歴セクション */
+        .history-section {
+            margin-top: 30px;
+            text-align: left;
+        }
+
+        .history-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .history-chart-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            height: 300px;
+            position: relative;
+        }
+
+        .history-list {
+            max-height: 400px;
+            overflow-y: auto;
+            margin: 15px 0;
+            padding: 10px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .history-item {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .history-item:hover {
+            background-color: #f5f7ff;
+        }
+
+        .history-item:last-child {
+            border-bottom: none;
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .history-date {
+            font-weight: 700;
+            color: #1a237e;
+            font-size: 1.1rem;
+        }
+
+        .history-mode {
+            background-color: #e8eaf6;
+            color: #3949ab;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .history-stats {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .history-stat {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .history-correct {
+            color: #4caf50;
+            font-weight: 600;
+        }
+
+        .history-incorrect {
+            color: #f44336;
+            font-weight: 600;
+        }
+
+        .history-accuracy {
+            color: #9c27b0;
+            font-weight: 600;
+        }
+
+        .history-time {
+            color: #3949ab;
+            font-weight: 600;
+        }
+
+        .history-mistakes {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px dashed #eee;
+            display: none;
+        }
+
+        .history-item.expanded .history-mistakes {
+            display: block;
+        }
+
+        .mistakes-title {
+            font-weight: 600;
+            color: #f44336;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .mistakes-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .mistake-item {
+            background-color: #ffebee;
+            color: #c62828;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            border: 1px solid #ffcdd2;
+        }
+
+        .no-mistakes {
+            color: #666;
+            font-style: italic;
+            font-size: 0.9rem;
+        }
+
+        /* 詳細表示モーダル */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 800px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            color: #1a237e;
+            font-weight: 700;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #666;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-close:hover {
+            background-color: #f5f5f5;
+        }
+
+        .modal-details {
+            margin-bottom: 25px;
+        }
+
+        .modal-details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .detail-item {
+            background-color: #f8f9ff;
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .detail-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .detail-value {
+            font-weight: 600;
+            color: #1a237e;
+            font-size: 1.1rem;
+        }
+
+        .modal-mistakes {
+            margin-top: 20px;
+        }
+
+        .modal-mistakes-title {
+            font-weight: 700;
+            color: #f44336;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .modal-mistakes-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .modal-mistake-item {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-mistake-item:last-child {
+            border-bottom: none;
+        }
+
+        .mistake-word {
+            font-weight: 600;
+            color: #1a237e;
+        }
+
+        .mistake-meaning {
+            color: #555;
         }
 
         /* フッター */
@@ -314,10 +786,19 @@
             font-weight: 600;
             transition: all 0.3s;
             margin-top: 15px;
+            margin-right: 10px;
         }
 
         .back-btn:hover {
-            background-color: #eef2ff;
+            background-color: #e8eaf6;
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 20px;
         }
 
         /* レスポンシブ */
@@ -327,7 +808,7 @@
             }
             
             .card-container {
-                height: 300px;
+                height: 320px;
             }
             
             .card-word {
@@ -336,6 +817,16 @@
             
             .card-meaning {
                 font-size: 1.8rem;
+            }
+            
+            .answer-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .answer-btn {
+                width: 100%;
+                max-width: 300px;
             }
             
             .controls {
@@ -349,6 +840,34 @@
             .setting-group {
                 flex-direction: column;
             }
+            
+            .stats-bar {
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-start;
+            }
+            
+            .back-btn {
+                margin-right: 0;
+                margin-bottom: 10px;
+            }
+            
+            .history-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .history-chart-container {
+                height: 250px;
+            }
+            
+            .modal-content {
+                padding: 20px;
+            }
+            
+            .modal-details-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
         @media (max-width: 480px) {
@@ -361,7 +880,7 @@
             }
             
             .card-container {
-                height: 250px;
+                height: 280px;
             }
             
             .card-word {
@@ -375,6 +894,10 @@
             h1 {
                 font-size: 1.5rem;
             }
+            
+            .result-stats {
+                grid-template-columns: 1fr;
+            }
         }
 
         /* アニメーション */
@@ -386,14 +909,41 @@
         .fade-in {
             animation: fadeIn 0.5s ease-out;
         }
+
+        /* 無効化されたアニメーション */
+        .no-animation * {
+            animation: none !important;
+            transition: none !important;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1><i class="fas fa-layer-group"></i>フラッシュカード学習アプリ</h1>
-            <p class="subtitle">JSONデータを選択して学習を始めましょう</p>
+            <h1><i class="fas fa-graduation-cap"></i>受験生向けフラッシュカード学習アプリ</h1>
+            <p class="subtitle">効率的な単語学習で試験対策を強化</p>
+            <p class="copyright">© Team Hijikinoheya 2025</p>
         </header>
+
+        <!-- 統計バー（学習中のみ表示） -->
+        <div id="stats-bar" class="stats-bar" style="display: none;">
+            <div class="stat-item">
+                <i class="fas fa-clock"></i>
+                <span>学習時間: <span id="study-time" class="timer">00:00</span></span>
+            </div>
+            <div class="stat-item">
+                <i class="fas fa-check-circle" style="color: #4caf50;"></i>
+                <span>正解: <span id="correct-count" class="stat-value">0</span></span>
+            </div>
+            <div class="stat-item">
+                <i class="fas fa-times-circle" style="color: #f44336;"></i>
+                <span>不正解: <span id="incorrect-count" class="stat-value">0</span></span>
+            </div>
+            <div class="stat-item">
+                <i class="fas fa-chart-line" style="color: #9c27b0;"></i>
+                <span>正解率: <span id="accuracy-rate" class="stat-value">0%</span></span>
+            </div>
+        </div>
 
         <!-- ファイル選択セクション -->
         <section id="file-select-section" class="app-section active-section">
@@ -409,9 +959,14 @@
                     <div class="file-name" id="file-name">ファイルが選択されていません</div>
                 </div>
                 
-                <button id="use-default-data" class="default-data-btn">
-                    <i class="fas fa-database"></i> デフォルトデータを使用
-                </button>
+                <div class="action-buttons">
+                    <button id="use-default-data" class="default-data-btn">
+                        <i class="fas fa-database"></i> デフォルトデータを使用
+                    </button>
+                    <button id="go-to-generator" class="back-btn">
+                        <i class="fas fa-plus-circle"></i> JSON生成ツールへ
+                    </button>
+                </div>
             </div>
         </section>
 
@@ -419,7 +974,6 @@
         <section id="settings-section" class="app-section">
             <div class="settings">
                 <h2><i class="fas fa-cog"></i> 学習設定</h2>
-                <p>学習モードを選択してください</p>
                 
                 <div class="setting-group">
                     <button id="sequential-mode" class="mode-btn active">
@@ -428,21 +982,40 @@
                     <button id="random-mode" class="mode-btn">
                         <i class="fas fa-random"></i> ランダムモード
                     </button>
+                    <button id="weakness-mode" class="mode-btn">
+                        <i class="fas fa-fire"></i> 苦手克服モード
+                    </button>
                 </div>
                 
-                <button id="start-learning" class="nav-btn" style="margin-top: 20px;">
-                    <i class="fas fa-play-circle"></i> 学習を開始する
-                </button>
+                <div class="animation-toggle">
+                    <span>アニメーション効果:</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="animation-toggle">
+                        <span class="toggle-slider"></span>
+                    </label>
+                    <span id="animation-status">無効</span>
+                </div>
+                
+                <div style="margin-top: 20px; text-align: center;">
+                    <button id="view-history" class="back-btn" style="margin-right: 10px;">
+                        <i class="fas fa-history"></i> 学習履歴とグラフ
+                    </button>
+                    <button id="start-learning" class="nav-btn" style="padding: 15px 40px; font-size: 1.1rem;">
+                        <i class="fas fa-play-circle"></i> 学習を開始する
+                    </button>
+                </div>
             </div>
             
-            <button id="back-to-file" class="back-btn">
-                <i class="fas fa-arrow-left"></i> データ選択に戻る
-            </button>
+            <div style="text-align: center;">
+                <button id="back-to-file" class="back-btn">
+                    <i class="fas fa-arrow-left"></i> データ選択に戻る
+                </button>
+            </div>
         </section>
 
         <!-- フラッシュカードセクション -->
         <section id="flashcard-section" class="app-section">
-            <h2 style="text-align: center; margin-bottom: 20px;"><i class="fas fa-layer-group"></i> フラッシュカード</h2>
+            <h2 style="text-align: center; margin-bottom: 20px;"><i class="fas fa-layer-group"></i> フラッシュカード学習</h2>
             
             <div class="progress">
                 <span id="card-counter">0/0</span>
@@ -455,13 +1028,24 @@
                 <div class="card" id="card">
                     <div class="card-front">
                         <div class="card-word" id="card-word">単語</div>
+                        <div class="card-example" id="card-example"></div>
                         <div class="card-hint">タップして意味を表示</div>
                     </div>
                     <div class="card-back">
                         <div class="card-meaning" id="card-meaning">意味</div>
+                        <div class="card-example" id="card-example-back"></div>
                         <div class="card-hint">タップして単語を表示</div>
                     </div>
                 </div>
+            </div>
+            
+            <div class="answer-buttons">
+                <button id="incorrect-btn" class="answer-btn">
+                    <i class="fas fa-times"></i> 不正解（次へ）
+                </button>
+                <button id="correct-btn" class="answer-btn">
+                    <i class="fas fa-check"></i> 正解（次へ）
+                </button>
             </div>
             
             <div class="controls">
@@ -477,16 +1061,135 @@
             </div>
             
             <div style="text-align: center; margin-top: 20px;">
+                <button id="finish-session" class="back-btn" style="background-color: #ff9800; color: white; border: none;">
+                    <i class="fas fa-flag-checkered"></i> 学習を終了する
+                </button>
                 <button id="back-to-settings" class="back-btn">
                     <i class="fas fa-arrow-left"></i> 設定に戻る
                 </button>
             </div>
         </section>
 
+        <!-- 結果セクション -->
+        <section id="results-section" class="app-section">
+            <div class="results">
+                <h2><i class="fas fa-trophy"></i> 学習結果</h2>
+                
+                <div class="result-stats">
+                    <div class="result-stat correct">
+                        <div>正解数</div>
+                        <div class="value" id="result-correct">0</div>
+                        <div>単語</div>
+                    </div>
+                    <div class="result-stat incorrect">
+                        <div>不正解数</div>
+                        <div class="value" id="result-incorrect">0</div>
+                        <div>単語</div>
+                    </div>
+                    <div class="result-stat time">
+                        <div>学習時間</div>
+                        <div class="value" id="result-time">00:00</div>
+                        <div>分:秒</div>
+                    </div>
+                    <div class="result-stat accuracy">
+                        <div>正解率</div>
+                        <div class="value" id="result-accuracy">0%</div>
+                        <div>達成率</div>
+                    </div>
+                </div>
+                
+                <div class="review-section" id="review-section" style="display: none;">
+                    <h3><i class="fas fa-redo"></i> 復習が必要な単語</h3>
+                    <p>以下の単語は不正解でした。重点的に復習しましょう。</p>
+                    
+                    <div class="review-list" id="review-list">
+                        <!-- 復習単語がここに表示されます -->
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button id="review-weakness" class="nav-btn">
+                            <i class="fas fa-fire"></i> 苦手単語を復習
+                        </button>
+                        <button id="restart-session" class="nav-btn" style="background: linear-gradient(to right, #00796b, #0097a7);">
+                            <i class="fas fa-sync-alt"></i> もう一度学習
+                        </button>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 25px;">
+                    <button id="back-to-settings-from-results" class="back-btn">
+                        <i class="fas fa-arrow-left"></i> 設定に戻る
+                    </button>
+                    <button id="new-session" class="nav-btn" style="margin-left: 10px;">
+                        <i class="fas fa-plus-circle"></i> 新しい学習を開始
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 履歴セクション -->
+        <section id="history-section" class="app-section">
+            <div class="settings">
+                <h2><i class="fas fa-history"></i> 学習履歴と分析</h2>
+                <p>過去の学習結果をグラフで分析できます</p>
+                
+                <div class="history-controls">
+                    <div>
+                        <button id="clear-history" class="back-btn" style="background-color: #f44336; color: white; border: none;">
+                            <i class="fas fa-trash-alt"></i> 履歴をクリア
+                        </button>
+                    </div>
+                    <div>
+                        表示: <select id="history-filter" class="back-btn" style="padding: 8px 15px;">
+                            <option value="10">最近10回</option>
+                            <option value="20">最近20回</option>
+                            <option value="all">すべて</option>
+                            <option value="7">過去7日間</option>
+                            <option value="30">過去30日間</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="history-chart-container">
+                    <canvas id="history-chart"></canvas>
+                </div>
+                
+                <div class="history-list" id="history-list">
+                    <!-- 履歴がここに表示されます -->
+                </div>
+                
+                <div style="text-align: center; margin-top: 20px;">
+                    <button id="back-to-settings-from-history" class="back-btn">
+                        <i class="fas fa-arrow-left"></i> 設定に戻る
+                    </button>
+                </div>
+            </div>
+        </section>
+
         <footer>
-            <p>フラッシュカード学習アプリ &copy; 2023</p>
-            <p>単語をタップして裏返し、ボタンでカードを移動できます</p>
+            <p>© Team Hijikinoheya 2025 - 受験生向けフラッシュカード学習アプリ</p>
+            <p>単語をタップして裏返し、正解/不正解ボタンで学習進捗を記録できます</p>
         </footer>
+    </div>
+
+    <!-- 詳細表示モーダル -->
+    <div id="history-detail-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">学習セッション詳細</h3>
+                <button class="modal-close" id="modal-close">&times;</button>
+            </div>
+            
+            <div class="modal-details">
+                <div class="modal-details-grid" id="modal-details">
+                    <!-- 詳細情報がここに表示されます -->
+                </div>
+                
+                <div class="modal-mistakes" id="modal-mistakes-section">
+                    <!-- 誤答単語がここに表示されます -->
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -496,122 +1199,32 @@
             flashcards: [],
             currentIndex: 0,
             isRandomMode: false,
-            originalOrder: []
+            isWeaknessMode: false,
+            animationsEnabled: false, // デフォルトで無効
+            originalOrder: [],
+            studyStartTime: null,
+            studyTime: 0,
+            timerInterval: null,
+            correctCount: 0,
+            incorrectCount: 0,
+            cardStatus: {}, // 各カードの正解/不正解状態を記録
+            cardDetails: {}, // 各カードの詳細情報（誤答記録用）
+            weaknessCards: [], // 苦手なカードのインデックス
+            sessionHistory: [] // 学習履歴
         };
 
-        // デフォルトデータ（提供された単語リスト）
+        // デフォルトデータ（例文付き）
         const defaultData = [
-            {"english": "Blunder", "japanese": "大失敗"},
-            {"english": "Cancel", "japanese": "取り消す"},
-            {"english": "Continuous", "japanese": "連続した"},
-            {"english": "Distribute", "japanese": "配る"},
-            {"english": "Document", "japanese": "文書"},
-            {"english": "Fragile", "japanese": "壊れやすい"},
-            {"english": "Myth", "japanese": "神話・作り話"},
-            {"english": "Reject", "japanese": "拒否する"},
-            {"english": "Scuffle", "japanese": "取っ組み合い"},
-            {"english": "Solitary", "japanese": "孤独の"},
-            {"english": "Temporary", "japanese": "一時的な"},
-            {"english": "Veteran", "japanese": "ベテラン"},
-            {"english": "Abandon", "japanese": "見捨てる"},
-            {"english": "Assault", "japanese": "暴行／襲撃"},
-            {"english": "Convert", "japanese": "変える"},
-            {"english": "Dispute", "japanese": "争う／論争"},
-            {"english": "Impressive", "japanese": "印象的な"},
-            {"english": "Justify", "japanese": "正当化する"},
-            {"english": "Misleading", "japanese": "紛らわしい"},
-            {"english": "Numerous", "japanese": "多数の"},
-            {"english": "Productive", "japanese": "生産的な"},
-            {"english": "Shrewd", "japanese": "賢い／抜け目のない"},
-            {"english": "Strategy", "japanese": "戦略"},
-            {"english": "Villain", "japanese": "悪役"},
-            {"english": "Bluff", "japanese": "はったりをかける"},
-            {"english": "Cautious", "japanese": "用心深い"},
-            {"english": "Consist", "japanese": "成り立つ"},
-            {"english": "Despise", "japanese": "軽蔑する"},
-            {"english": "Haven", "japanese": "安全な場所"},
-            {"english": "Miniature", "japanese": "小型の／ミニチュア"},
-            {"english": "Monarch", "japanese": "君主"},
-            {"english": "Obstacle", "japanese": "障害"},
-            {"english": "Postpone", "japanese": "延期する"},
-            {"english": "Straggle", "japanese": "散らばる／遅れる"},
-            {"english": "Treacherous", "japanese": "裏切りの／危険な"},
-            {"english": "Vivid", "japanese": "鮮明な"},
-            {"english": "Aggressive", "japanese": "攻撃的な"},
-            {"english": "Associate", "japanese": "関連づける／仲間"},
-            {"english": "Deceive", "japanese": "だます"},
-            {"english": "Emigrate", "japanese": "移住する"},
-            {"english": "Flexible", "japanese": "柔軟な"},
-            {"english": "Glamour", "japanese": "魅力"},
-            {"english": "Hazy", "japanese": "かすんだ"},
-            {"english": "Linger", "japanese": "ぐずぐず残る"},
-            {"english": "Luxurious", "japanese": "豪華な"},
-            {"english": "Mishap", "japanese": "事故／不運"},
-            {"english": "Overwhelm", "japanese": "圧倒する"},
-            {"english": "Span", "japanese": "期間／範囲"},
-            {"english": "Blemish", "japanese": "汚点"},
-            {"english": "Blunt", "japanese": "鈍い／率直な"},
-            {"english": "Capable", "japanese": "能力がある"},
-            {"english": "Conclude", "japanese": "結論づける"},
-            {"english": "Detect", "japanese": "感知する"},
-            {"english": "Fatigue", "japanese": "疲労"},
-            {"english": "Festive", "japanese": "祝祭の"},
-            {"english": "Hospitality", "japanese": "もてなし"},
-            {"english": "Nomad", "japanese": "遊牧民"},
-            {"english": "Persecute", "japanese": "迫害する"},
-            {"english": "Supreme", "japanese": "最高の"},
-            {"english": "Transport", "japanese": "輸送する"},
-            {"english": "Accomplish", "japanese": "達成する"},
-            {"english": "Apparent", "japanese": "明らかな"},
-            {"english": "Capacity", "japanese": "能力／容量"},
-            {"english": "Civilian", "japanese": "民間人"},
-            {"english": "Conceal", "japanese": "隠す"},
-            {"english": "Duplicate", "japanese": "複製する"},
-            {"english": "Keen", "japanese": "熱心な／鋭い"},
-            {"english": "Provoke", "japanese": "引き起こす／刺激する"},
-            {"english": "Spurt", "japanese": "噴き出す／急に速くなる"},
-            {"english": "Undoing", "japanese": "破滅の原因"},
-            {"english": "Vast", "japanese": "広大な"},
-            {"english": "Withdraw", "japanese": "引き出す／撤退する"},
-            {"english": "Reservation", "japanese": "保留／インディアン居留地"},
-            {"english": "Poverty", "japanese": "貧困"},
-            {"english": "Displacement", "japanese": "追い立て／移動"},
-            {"english": "Bullying", "japanese": "いじめ"},
-            {"english": "Isolation", "japanese": "孤立"},
-            {"english": "Racism", "japanese": "人種差別"},
-            {"english": "Grief", "japanese": "深い悲しみ"},
-            {"english": "Courage", "japanese": "勇気"},
-            {"english": "Opportunity", "japanese": "機会"},
-            {"english": "Education", "japanese": "教育"},
-            {"english": "Belonging", "japanese": "所属感"},
-            {"english": "Humour", "japanese": "ユーモア"},
-            {"english": "Stereotype", "japanese": "固定観念"},
-            {"english": "Determination", "japanese": "決意"},
-            {"english": "Empowerment", "japanese": "権限付与／力を与えること"},
-            {"english": "Identity", "japanese": "自己認識／アイデンティティ"},
-            {"english": "Resilience", "japanese": "回復力"},
-            {"english": "Alienation", "japanese": "疎外"},
-            {"english": "Assimilation", "japanese": "同化"},
-            {"english": "Oppression", "japanese": "抑圧"},
-            {"english": "Tragedy", "japanese": "悲劇"},
-            {"english": "Community", "japanese": "コミュニティ／共同体"},
-            {"english": "Voice", "japanese": "声／意見"},
-            {"english": "Cultural Heritage", "japanese": "文化遺産"},
-            {"english": "Intrigue", "japanese": "興味を引く／陰謀"},
-            {"english": "Disconcerting", "japanese": "当惑させる"},
-            {"english": "Requisite", "japanese": "必要条件"},
-            {"english": "Resonate", "japanese": "共鳴する"},
-            {"english": "Nominal", "japanese": "名目上の"},
-            {"english": "Recap", "japanese": "要約する"},
-            {"english": "Repatriate", "japanese": "本国へ帰す"},
-            {"english": "Chide", "japanese": "たしなめる"},
-            {"english": "Expiration", "japanese": "期限切れ"},
-            {"english": "Despondent", "japanese": "落胆した"},
-            {"english": "Contribute", "japanese": "貢献する"},
-            {"english": "Immigrate", "japanese": "移住する"},
-            {"english": "Reaction", "japanese": "反応"},
-            {"english": "Relocate", "japanese": "移転する"},
-            {"english": "Shifting", "japanese": "移り変わる"}
+            {"english": "Blunder", "japanese": "大失敗", "example": "He made a serious blunder in the negotiation."},
+            {"english": "Cancel", "japanese": "取り消す", "example": "I need to cancel my appointment due to an emergency."},
+            {"english": "Continuous", "japanese": "連続した", "example": "The continuous rain caused flooding in the area."},
+            {"english": "Distribute", "japanese": "配る", "example": "Volunteers will distribute food to the homeless."},
+            {"english": "Document", "japanese": "文書", "example": "Please read the document carefully before signing."},
+            {"english": "Fragile", "japanese": "壊れやすい", "example": "The package contains fragile items, so handle with care."},
+            {"english": "Myth", "japanese": "神話・作り話", "example": "The idea that carrots improve night vision is a myth."},
+            {"english": "Reject", "japanese": "拒否する", "example": "The committee decided to reject the proposal."},
+            {"english": "Scuffle", "japanese": "取っ組み合い", "example": "A scuffle broke out between the two players."},
+            {"english": "Solitary", "japanese": "孤独の", "example": "He led a solitary life in the remote cabin."}
         ];
 
         // セクション切り替え
@@ -621,6 +1234,39 @@
             });
             document.getElementById(sectionId).classList.add('active-section');
             state.currentSection = sectionId;
+            
+            // 統計バーの表示/非表示
+            if (sectionId === 'flashcard-section') {
+                document.getElementById('stats-bar').style.display = 'flex';
+            } else {
+                document.getElementById('stats-bar').style.display = 'none';
+            }
+            
+            // 履歴セクションの場合、履歴を読み込む
+            if (sectionId === 'history-section') {
+                loadHistory();
+                updateHistoryChart();
+            }
+        }
+
+        // アニメーション設定
+        function updateAnimationSetting() {
+            const animationToggle = document.getElementById('animation-toggle');
+            state.animationsEnabled = animationToggle.checked;
+            
+            // アニメーションステータス表示を更新
+            const statusElement = document.getElementById('animation-status');
+            statusElement.textContent = state.animationsEnabled ? '有効' : '無効';
+            
+            // アニメーションクラスを適用/削除
+            if (state.animationsEnabled) {
+                document.body.classList.remove('no-animation');
+            } else {
+                document.body.classList.add('no-animation');
+            }
+            
+            // 設定を保存
+            localStorage.setItem('flashcard_animations', state.animationsEnabled);
         }
 
         // ファイル選択処理
@@ -655,6 +1301,11 @@
             showSection('settings-section');
         });
 
+        // JSON生成ツールへ移動
+        document.getElementById('go-to-generator').addEventListener('click', function() {
+            window.open('generate_json.html', '_blank');
+        });
+
         // 戻るボタン
         document.getElementById('back-to-file').addEventListener('click', function() {
             showSection('file-select-section');
@@ -664,18 +1315,51 @@
             showSection('settings-section');
         });
 
+        document.getElementById('back-to-settings-from-results').addEventListener('click', function() {
+            showSection('settings-section');
+        });
+
+        document.getElementById('back-to-settings-from-history').addEventListener('click', function() {
+            showSection('settings-section');
+        });
+
+        // 履歴を見るボタン
+        document.getElementById('view-history').addEventListener('click', function() {
+            showSection('history-section');
+        });
+
         // モード選択
         document.getElementById('sequential-mode').addEventListener('click', function() {
             document.getElementById('sequential-mode').classList.add('active');
             document.getElementById('random-mode').classList.remove('active');
+            document.getElementById('weakness-mode').classList.remove('active');
             state.isRandomMode = false;
+            state.isWeaknessMode = false;
         });
 
         document.getElementById('random-mode').addEventListener('click', function() {
             document.getElementById('random-mode').classList.add('active');
             document.getElementById('sequential-mode').classList.remove('active');
+            document.getElementById('weakness-mode').classList.remove('active');
             state.isRandomMode = true;
+            state.isWeaknessMode = false;
         });
+
+        document.getElementById('weakness-mode').addEventListener('click', function() {
+            if (state.weaknessCards.length === 0) {
+                alert('苦手な単語が記録されていません。まず通常の学習を行ってください。');
+                return;
+            }
+            
+            document.getElementById('weakness-mode').classList.add('active');
+            document.getElementById('sequential-mode').classList.remove('active');
+            document.getElementById('random-mode').classList.remove('active');
+            state.isRandomMode = false;
+            state.isWeaknessMode = true;
+        });
+
+        // アニメーション設定変更
+        document.getElementById('animation-toggle').addEventListener('change', updateAnimationSetting);
 
         // 学習開始
         document.getElementById('start-learning').addEventListener('click', function() {
@@ -684,18 +1368,49 @@
                 return;
             }
             
+            // 学習状態をリセット
+            resetLearningState();
+            
             // 元の順序を保存
             state.originalOrder = [...state.flashcards];
             
+            // 苦手克服モードの場合、苦手なカードだけを選択
+            if (state.isWeaknessMode) {
+                const weaknessFlashcards = state.weaknessCards.map(index => state.flashcards[index]);
+                if (weaknessFlashcards.length === 0) {
+                    alert('苦手な単語がありません。まず通常の学習を行ってください。');
+                    return;
+                }
+                state.flashcards = weaknessFlashcards;
+            }
             // ランダムモードの場合、カードをシャッフル
-            if (state.isRandomMode) {
+            else if (state.isRandomMode) {
                 shuffleFlashcards();
             }
             
             state.currentIndex = 0;
+            
+            // タイマー開始
+            startTimer();
+            
             updateCard();
             showSection('flashcard-section');
         });
+
+        // 学習状態をリセット
+        function resetLearningState() {
+            state.currentIndex = 0;
+            state.correctCount = 0;
+            state.incorrectCount = 0;
+            state.cardStatus = {};
+            state.cardDetails = {};
+            state.studyTime = 0;
+            
+            // 統計表示をリセット
+            document.getElementById('correct-count').textContent = '0';
+            document.getElementById('incorrect-count').textContent = '0';
+            document.getElementById('accuracy-rate').textContent = '0%';
+        }
 
         // カードシャッフル関数
         function shuffleFlashcards() {
@@ -705,16 +1420,42 @@
             }
         }
 
-        // カード更新
+        // カード更新 - 裏返った状態がちらつかないように改善
         function updateCard() {
             if (state.flashcards.length === 0) return;
             
             const card = state.flashcards[state.currentIndex];
-            document.getElementById('card-word').textContent = card.english;
-            document.getElementById('card-meaning').textContent = card.japanese;
             
-            // カードが裏返っていたら表に戻す
-            document.getElementById('card').classList.remove('flipped');
+            // まずカードを表に戻す（ちらつき防止）
+            const cardElement = document.getElementById('card');
+            cardElement.classList.remove('flipped');
+            
+            // アニメーションを無効化している場合は、すぐに更新
+            if (!state.animationsEnabled) {
+                document.getElementById('card-word').textContent = card.english;
+                document.getElementById('card-meaning').textContent = card.japanese;
+                
+                // 例文を表示（存在する場合）
+                const example = card.example || '';
+                document.getElementById('card-example').textContent = example;
+                document.getElementById('card-example-back').textContent = example;
+            } else {
+                // アニメーションがある場合は、少し遅延させて更新
+                setTimeout(() => {
+                    document.getElementById('card-word').textContent = card.english;
+                    document.getElementById('card-meaning').textContent = card.japanese;
+                    
+                    // 例文を表示（存在する場合）
+                    const example = card.example || '';
+                    document.getElementById('card-example').textContent = example;
+                    document.getElementById('card-example-back').textContent = example;
+                }, 10);
+            }
+            
+            // カードの色をリセット
+            cardElement.classList.remove('correct');
+            cardElement.classList.remove('incorrect');
+            cardElement.classList.remove('pulse');
             
             // 進捗の更新
             document.getElementById('card-counter').textContent = `${state.currentIndex + 1}/${state.flashcards.length}`;
@@ -724,6 +1465,25 @@
             // ボタンの状態を更新
             document.getElementById('prev-btn').disabled = state.currentIndex === 0;
             document.getElementById('next-btn').disabled = state.currentIndex === state.flashcards.length - 1;
+            
+            // 現在のカードの状態に応じてボタンをハイライト
+            const cardId = getCurrentCardId();
+            if (state.cardStatus[cardId]) {
+                if (state.cardStatus[cardId] === 'correct') {
+                    cardElement.classList.add('correct');
+                } else if (state.cardStatus[cardId] === 'incorrect') {
+                    cardElement.classList.add('incorrect');
+                }
+            }
+            
+            // 学習終了ボタンのパルスをリセット
+            document.getElementById('finish-session').classList.remove('pulse');
+        }
+
+        // 現在のカードの一意のIDを取得
+        function getCurrentCardId() {
+            const card = state.flashcards[state.currentIndex];
+            return `${card.english}_${card.japanese}`;
         }
 
         // カードを裏返す
@@ -752,6 +1512,704 @@
             }
         });
 
+        // 正解ボタン - 次のカードへ自動的に進む
+        document.getElementById('correct-btn').addEventListener('click', function() {
+            const cardId = getCurrentCardId();
+            const card = state.flashcards[state.currentIndex];
+            
+            state.cardStatus[cardId] = 'correct';
+            state.correctCount++;
+            
+            // カード詳細情報を記録
+            if (!state.cardDetails[cardId]) {
+                state.cardDetails[cardId] = {
+                    english: card.english,
+                    japanese: card.japanese,
+                    attempts: []
+                };
+            }
+            state.cardDetails[cardId].attempts.push({
+                timestamp: new Date().toISOString(),
+                correct: true
+            });
+            
+            // カードを緑色でハイライト
+            const cardElement = document.getElementById('card');
+            cardElement.classList.remove('incorrect');
+            cardElement.classList.add('correct');
+            
+            if (state.animationsEnabled) {
+                cardElement.classList.add('pulse');
+            }
+            
+            // 統計を更新
+            updateStats();
+            
+            // 自動的に次のカードへ
+            moveToNextCard();
+        });
+
+        // 不正解ボタン - 次のカードへ自動的に進む
+        document.getElementById('incorrect-btn').addEventListener('click', function() {
+            const cardId = getCurrentCardId();
+            const card = state.flashcards[state.currentIndex];
+            
+            state.cardStatus[cardId] = 'incorrect';
+            state.incorrectCount++;
+            
+            // カード詳細情報を記録
+            if (!state.cardDetails[cardId]) {
+                state.cardDetails[cardId] = {
+                    english: card.english,
+                    japanese: card.japanese,
+                    attempts: []
+                };
+            }
+            state.cardDetails[cardId].attempts.push({
+                timestamp: new Date().toISOString(),
+                correct: false
+            });
+            
+            // 苦手なカードリストに追加（重複を避ける）
+            const originalIndex = state.originalOrder.findIndex(c => 
+                c.english === card.english && 
+                c.japanese === card.japanese
+            );
+            
+            if (originalIndex !== -1 && !state.weaknessCards.includes(originalIndex)) {
+                state.weaknessCards.push(originalIndex);
+            }
+            
+            // カードを赤色でハイライト
+            const cardElement = document.getElementById('card');
+            cardElement.classList.remove('correct');
+            cardElement.classList.add('incorrect');
+            
+            if (state.animationsEnabled) {
+                cardElement.classList.add('pulse');
+            }
+            
+            // 統計を更新
+            updateStats();
+            
+            // 自動的に次のカードへ
+            moveToNextCard();
+        });
+
+        // 次のカードに移動
+        function moveToNextCard() {
+            // 少し遅延させて次へ移動（アニメーションを見せるため）
+            const delay = state.animationsEnabled ? 500 : 100;
+            
+            setTimeout(() => {
+                if (state.currentIndex < state.flashcards.length - 1) {
+                    state.currentIndex++;
+                    updateCard();
+                } else {
+                    // 最後のカードの場合、学習終了を促す
+                    document.getElementById('finish-session').classList.add('pulse');
+                    
+                    // 最後のカードでも自動的に結果表示へ
+                    setTimeout(() => {
+                        document.getElementById('finish-session').click();
+                    }, 1000);
+                }
+            }, delay);
+        }
+
+        // 統計を更新
+        function updateStats() {
+            document.getElementById('correct-count').textContent = state.correctCount;
+            document.getElementById('incorrect-count').textContent = state.incorrectCount;
+            
+            const totalAnswered = state.correctCount + state.incorrectCount;
+            const accuracy = totalAnswered > 0 ? Math.round((state.correctCount / totalAnswered) * 100) : 0;
+            document.getElementById('accuracy-rate').textContent = `${accuracy}%`;
+        }
+
+        // タイマー機能
+        function startTimer() {
+            state.studyStartTime = Date.now();
+            
+            if (state.timerInterval) {
+                clearInterval(state.timerInterval);
+            }
+            
+            state.timerInterval = setInterval(() => {
+                const elapsed = Date.now() - state.studyStartTime;
+                state.studyTime = Math.floor(elapsed / 1000);
+                
+                const minutes = Math.floor(state.studyTime / 60);
+                const seconds = state.studyTime % 60;
+                
+                const timeString = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                document.getElementById('study-time').textContent = timeString;
+            }, 1000);
+        }
+
+        // 学習終了
+        document.getElementById('finish-session').addEventListener('click', function() {
+            if (state.timerInterval) {
+                clearInterval(state.timerInterval);
+                state.timerInterval = null;
+            }
+            
+            showResults();
+        });
+
+        // 結果を表示
+        function showResults() {
+            // 結果を計算
+            const totalCards = state.flashcards.length;
+            const totalAnswered = state.correctCount + state.incorrectCount;
+            const accuracy = totalAnswered > 0 ? Math.round((state.correctCount / totalAnswered) * 100) : 0;
+            
+            // 結果を表示
+            document.getElementById('result-correct').textContent = state.correctCount;
+            document.getElementById('result-incorrect').textContent = state.incorrectCount;
+            document.getElementById('result-accuracy').textContent = `${accuracy}%`;
+            
+            const minutes = Math.floor(state.studyTime / 60);
+            const seconds = state.studyTime % 60;
+            document.getElementById('result-time').textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            // 復習が必要な単語を表示
+            const reviewSection = document.getElementById('review-section');
+            const reviewList = document.getElementById('review-list');
+            reviewList.innerHTML = '';
+            
+            // 不正解の単語を集める
+            const incorrectCards = [];
+            for (const cardId in state.cardStatus) {
+                if (state.cardStatus[cardId] === 'incorrect') {
+                    const card = state.cardDetails[cardId];
+                    if (card) {
+                        incorrectCards.push(card);
+                    }
+                }
+            }
+            
+            if (incorrectCards.length > 0) {
+                reviewSection.style.display = 'block';
+                
+                incorrectCards.forEach(card => {
+                    const reviewItem = document.createElement('div');
+                    reviewItem.className = 'review-item';
+                    reviewItem.innerHTML = `
+                        <div>
+                            <div class="review-word">${card.english}</div>
+                            <div class="review-meaning">${card.japanese}</div>
+                        </div>
+                        <div class="review-badge">要復習</div>
+                    `;
+                    reviewList.appendChild(reviewItem);
+                });
+            } else {
+                reviewSection.style.display = 'none';
+            }
+            
+            // 学習履歴に保存
+            saveSessionToHistory();
+            
+            showSection('results-section');
+        }
+
+        // 学習履歴に保存
+        function saveSessionToHistory() {
+            // 誤答単語を収集
+            const mistakes = [];
+            for (const cardId in state.cardDetails) {
+                const card = state.cardDetails[cardId];
+                // 最後の試行が不正解の場合のみ記録
+                if (card.attempts.length > 0 && !card.attempts[card.attempts.length - 1].correct) {
+                    mistakes.push({
+                        english: card.english,
+                        japanese: card.japanese
+                    });
+                }
+            }
+            
+            const sessionData = {
+                date: new Date().toISOString(),
+                totalCards: state.flashcards.length,
+                correct: state.correctCount,
+                incorrect: state.incorrectCount,
+                time: state.studyTime,
+                accuracy: state.correctCount + state.incorrectCount > 0 ? 
+                    Math.round((state.correctCount / (state.correctCount + state.incorrectCount)) * 100) : 0,
+                mode: state.isRandomMode ? 'ランダム' : (state.isWeaknessMode ? '苦手克服' : '順番'),
+                mistakes: mistakes,
+                totalQuestions: state.correctCount + state.incorrectCount
+            };
+            
+            // 履歴を読み込む
+            loadHistoryData();
+            
+            // 新しいセッションを追加
+            state.sessionHistory.unshift(sessionData);
+            
+            // 履歴を保存（最新30件まで）
+            if (state.sessionHistory.length > 30) {
+                state.sessionHistory = state.sessionHistory.slice(0, 30);
+            }
+            
+            localStorage.setItem('flashcard_history', JSON.stringify(state.sessionHistory));
+        }
+
+        // 履歴データを読み込む
+        function loadHistoryData() {
+            const savedHistory = localStorage.getItem('flashcard_history');
+            if (savedHistory) {
+                try {
+                    state.sessionHistory = JSON.parse(savedHistory);
+                } catch (e) {
+                    state.sessionHistory = [];
+                }
+            } else {
+                state.sessionHistory = [];
+            }
+        }
+
+        // 履歴グラフを更新
+        let historyChart = null;
+        function updateHistoryChart() {
+            const ctx = document.getElementById('history-chart').getContext('2d');
+            
+            // 既存のチャートを破棄
+            if (historyChart) {
+                historyChart.destroy();
+            }
+            
+            // 履歴データを取得
+            loadHistoryData();
+            if (state.sessionHistory.length === 0) {
+                // 履歴がない場合の表示
+                ctx.font = "16px Arial";
+                ctx.fillStyle = "#999";
+                ctx.textAlign = "center";
+                ctx.fillText("学習履歴がありません", 350, 150);
+                return;
+            }
+            
+            // データを準備
+            const filter = document.getElementById('history-filter').value;
+            let filteredHistory = [...state.sessionHistory];
+            
+            // フィルター適用
+            if (filter !== 'all' && filter !== '10' && filter !== '20') {
+                const days = parseInt(filter);
+                const cutoffDate = new Date();
+                cutoffDate.setDate(cutoffDate.getDate() - days);
+                
+                filteredHistory = filteredHistory.filter(session => {
+                    const sessionDate = new Date(session.date);
+                    return sessionDate >= cutoffDate;
+                });
+            } else if (filter === '10') {
+                filteredHistory = filteredHistory.slice(0, 10);
+            } else if (filter === '20') {
+                filteredHistory = filteredHistory.slice(0, 20);
+            }
+            
+            if (filteredHistory.length === 0) {
+                ctx.font = "16px Arial";
+                ctx.fillStyle = "#999";
+                ctx.textAlign = "center";
+                ctx.fillText("該当する履歴がありません", 350, 150);
+                return;
+            }
+            
+            // ラベルとデータを準備
+            const labels = filteredHistory.map((session, index) => {
+                const date = new Date(session.date);
+                return `${date.getMonth()+1}/${date.getDate()} ${date.getHours()}:${date.getMinutes().toString().padStart(2, '0')}`;
+            }).reverse();
+            
+            const accuracyData = filteredHistory.map(session => session.accuracy).reverse();
+            const correctData = filteredHistory.map(session => session.correct).reverse();
+            const incorrectData = filteredHistory.map(session => session.incorrect).reverse();
+            
+            // グラフを作成
+            historyChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: '正解率 (%)',
+                            data: accuracyData,
+                            borderColor: '#9c27b0',
+                            backgroundColor: 'rgba(156, 39, 176, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.3,
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: '正解数',
+                            data: correctData,
+                            borderColor: '#4caf50',
+                            backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                            borderWidth: 2,
+                            fill: false,
+                            tension: 0.3,
+                            yAxisID: 'y1'
+                        },
+                        {
+                            label: '不正解数',
+                            data: incorrectData,
+                            borderColor: '#f44336',
+                            backgroundColor: 'rgba(244, 67, 54, 0.1)',
+                            borderWidth: 2,
+                            fill: false,
+                            tension: 0.3,
+                            yAxisID: 'y1'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: '学習履歴グラフ',
+                            font: {
+                                size: 16,
+                                weight: 'bold'
+                            },
+                            color: '#1a237e'
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                            titleColor: '#fff',
+                            bodyColor: '#fff',
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.datasetIndex === 0) {
+                                        label += context.raw + '%';
+                                    } else {
+                                        label += context.raw + '問';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            },
+                            ticks: {
+                                maxRotation: 45,
+                                minRotation: 45
+                            }
+                        },
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            title: {
+                                display: true,
+                                text: '正解率 (%)',
+                                color: '#9c27b0'
+                            },
+                            min: 0,
+                            max: 100,
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            }
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            title: {
+                                display: true,
+                                text: '問題数',
+                                color: '#666'
+                            },
+                            grid: {
+                                drawOnChartArea: false,
+                            },
+                        }
+                    }
+                }
+            });
+        }
+
+        // 履歴を表示
+        function loadHistory() {
+            loadHistoryData();
+            
+            const historyList = document.getElementById('history-list');
+            const filter = document.getElementById('history-filter').value;
+            
+            if (state.sessionHistory.length === 0) {
+                historyList.innerHTML = '<div style="text-align: center; padding: 30px; color: #666;">学習履歴がありません</div>';
+                return;
+            }
+            
+            let filteredHistory = [...state.sessionHistory];
+            
+            // フィルター適用
+            if (filter !== 'all' && filter !== '10' && filter !== '20') {
+                const days = parseInt(filter);
+                const cutoffDate = new Date();
+                cutoffDate.setDate(cutoffDate.getDate() - days);
+                
+                filteredHistory = filteredHistory.filter(session => {
+                    const sessionDate = new Date(session.date);
+                    return sessionDate >= cutoffDate;
+                });
+            } else if (filter === '10') {
+                filteredHistory = filteredHistory.slice(0, 10);
+            } else if (filter === '20') {
+                filteredHistory = filteredHistory.slice(0, 20);
+            }
+            
+            if (filteredHistory.length === 0) {
+                historyList.innerHTML = '<div style="text-align: center; padding: 30px; color: #666;">該当する履歴がありません</div>';
+                return;
+            }
+            
+            historyList.innerHTML = '';
+            
+            filteredHistory.forEach((session, index) => {
+                const date = new Date(session.date);
+                const dateStr = date.toLocaleDateString('ja-JP', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                
+                const minutes = Math.floor(session.time / 60);
+                const seconds = session.time % 60;
+                const timeStr = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                const historyItem = document.createElement('div');
+                historyItem.className = 'history-item';
+                historyItem.dataset.index = index;
+                
+                let mistakesHtml = '';
+                if (session.mistakes && session.mistakes.length > 0) {
+                    const mistakeItems = session.mistakes.slice(0, 5).map(mistake => 
+                        `<div class="mistake-item">${mistake.english}</div>`
+                    ).join('');
+                    
+                    const moreText = session.mistakes.length > 5 ? 
+                        `<div class="mistake-item">+${session.mistakes.length - 5}件</div>` : '';
+                    
+                    mistakesHtml = `
+                        <div class="history-mistakes">
+                            <div class="mistakes-title">誤答単語 (${session.mistakes.length}件):</div>
+                            <div class="mistakes-list">
+                                ${mistakeItems}
+                                ${moreText}
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                historyItem.innerHTML = `
+                    <div class="history-header">
+                        <div class="history-date">${dateStr}</div>
+                        <div class="history-mode">${session.mode}モード</div>
+                    </div>
+                    <div class="history-stats">
+                        <div class="history-stat">
+                            <i class="fas fa-check-circle" style="color: #4caf50;"></i>
+                            <span class="history-correct">${session.correct}問正解</span>
+                        </div>
+                        <div class="history-stat">
+                            <i class="fas fa-times-circle" style="color: #f44336;"></i>
+                            <span class="history-incorrect">${session.incorrect}問誤答</span>
+                        </div>
+                        <div class="history-stat">
+                            <i class="fas fa-chart-line" style="color: #9c27b0;"></i>
+                            <span class="history-accuracy">${session.accuracy}%</span>
+                        </div>
+                        <div class="history-stat">
+                            <i class="fas fa-clock" style="color: #3949ab;"></i>
+                            <span class="history-time">${timeStr}</span>
+                        </div>
+                    </div>
+                    <div style="font-size: 0.9rem; color: #666;">
+                        全${session.totalCards}問中 ${session.totalQuestions || session.correct + session.incorrect}問回答
+                    </div>
+                    ${mistakesHtml}
+                    <div style="text-align: right; margin-top: 10px;">
+                        <button class="back-btn view-detail-btn" style="padding: 5px 15px; font-size: 0.9rem;">
+                            <i class="fas fa-search"></i> 詳細を見る
+                        </button>
+                    </div>
+                `;
+                
+                historyList.appendChild(historyItem);
+                
+                // 詳細表示ボタンのイベントを追加
+                historyItem.querySelector('.view-detail-btn').addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    showSessionDetail(session);
+                });
+                
+                // アイテムクリックで展開
+                historyItem.addEventListener('click', function(e) {
+                    if (!e.target.closest('.view-detail-btn')) {
+                        this.classList.toggle('expanded');
+                    }
+                });
+            });
+        }
+
+        // セッション詳細を表示
+        function showSessionDetail(session) {
+            const modal = document.getElementById('history-detail-modal');
+            const detailsContainer = document.getElementById('modal-details');
+            const mistakesContainer = document.getElementById('modal-mistakes-section');
+            
+            const date = new Date(session.date);
+            const dateStr = date.toLocaleDateString('ja-JP', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                weekday: 'long',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            
+            const minutes = Math.floor(session.time / 60);
+            const seconds = session.time % 60;
+            const timeStr = `${minutes}分${seconds}秒`;
+            
+            // 詳細情報を表示
+            detailsContainer.innerHTML = `
+                <div class="detail-item">
+                    <div class="detail-label">実施日時</div>
+                    <div class="detail-value">${dateStr}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">学習モード</div>
+                    <div class="detail-value">${session.mode}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">学習時間</div>
+                    <div class="detail-value">${timeStr}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">問題数</div>
+                    <div class="detail-value">全${session.totalCards}問</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">正解数</div>
+                    <div class="detail-value" style="color: #4caf50;">${session.correct}問</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">不正解数</div>
+                    <div class="detail-value" style="color: #f44336;">${session.incorrect}問</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">正解率</div>
+                    <div class="detail-value" style="color: #9c27b0;">${session.accuracy}%</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">回答率</div>
+                    <div class="detail-value">${Math.round(((session.totalQuestions || (session.correct + session.incorrect)) / session.totalCards) * 100)}%</div>
+                </div>
+            `;
+            
+            // 誤答単語を表示
+            if (session.mistakes && session.mistakes.length > 0) {
+                let mistakesHtml = '<div class="modal-mistakes-title">誤答単語一覧</div>';
+                mistakesHtml += '<div class="modal-mistakes-list">';
+                
+                session.mistakes.forEach(mistake => {
+                    mistakesHtml += `
+                        <div class="modal-mistake-item">
+                            <div>
+                                <div class="mistake-word">${mistake.english}</div>
+                                <div class="mistake-meaning">${mistake.japanese}</div>
+                            </div>
+                            <div style="color: #f44336; font-size: 0.9rem;">
+                                <i class="fas fa-times-circle"></i> 誤答
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                mistakesHtml += '</div>';
+                mistakesContainer.innerHTML = mistakesHtml;
+                mistakesContainer.style.display = 'block';
+            } else {
+                mistakesContainer.innerHTML = '<div style="text-align: center; padding: 20px; color: #666; font-style: italic;">誤答はありませんでした</div>';
+                mistakesContainer.style.display = 'block';
+            }
+            
+            // モーダルを表示
+            modal.style.display = 'flex';
+        }
+
+        // モーダルを閉じる
+        document.getElementById('modal-close').addEventListener('click', function() {
+            document.getElementById('history-detail-modal').style.display = 'none';
+        });
+
+        // モーダル外をクリックで閉じる
+        document.getElementById('history-detail-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.style.display = 'none';
+            }
+        });
+
+        // 履歴フィルター変更
+        document.getElementById('history-filter').addEventListener('change', function() {
+            loadHistory();
+            updateHistoryChart();
+        });
+
+        // 履歴クリア
+        document.getElementById('clear-history').addEventListener('click', function() {
+            if (confirm('すべての学習履歴を削除しますか？この操作は元に戻せません。')) {
+                state.sessionHistory = [];
+                localStorage.removeItem('flashcard_history');
+                loadHistory();
+                updateHistoryChart();
+            }
+        });
+
+        // 苦手単語を復習
+        document.getElementById('review-weakness').addEventListener('click', function() {
+            state.isWeaknessMode = true;
+            document.getElementById('weakness-mode').classList.add('active');
+            document.getElementById('sequential-mode').classList.remove('active');
+            document.getElementById('random-mode').classList.remove('active');
+            
+            // 学習を開始
+            document.getElementById('start-learning').click();
+        });
+
+        // もう一度学習
+        document.getElementById('restart-session').addEventListener('click', function() {
+            // 同じ設定で学習を再開
+            document.getElementById('start-learning').click();
+        });
+
+        // 新しい学習を開始
+        document.getElementById('new-session').addEventListener('click', function() {
+            showSection('settings-section');
+        });
+
         // キーボードショートカット
         document.addEventListener('keydown', function(e) {
             if (state.currentSection !== 'flashcard-section') return;
@@ -761,22 +2219,58 @@
                     document.getElementById('prev-btn').click();
                     break;
                 case 'ArrowRight':
+                case ' ':
                     document.getElementById('next-btn').click();
                     break;
-                case ' ':
                 case 'Enter':
                     e.preventDefault();
                     document.getElementById('flip-btn').click();
+                    break;
+                case '1':
+                case 'c':
+                    document.getElementById('correct-btn').click();
+                    break;
+                case '2':
+                case 'i':
+                    document.getElementById('incorrect-btn').click();
+                    break;
+                case 'Escape':
+                    document.getElementById('finish-session').click();
                     break;
             }
         });
 
         // 初期化
         document.addEventListener('DOMContentLoaded', function() {
-            // アニメーションクラスを追加
-            document.querySelectorAll('.app-section').forEach(section => {
-                section.classList.add('fade-in');
-            });
+            // アニメーション設定を読み込む
+            const savedAnimations = localStorage.getItem('flashcard_animations');
+            const animationToggle = document.getElementById('animation-toggle');
+            
+            if (savedAnimations !== null) {
+                state.animationsEnabled = savedAnimations === 'true';
+                animationToggle.checked = state.animationsEnabled;
+            } else {
+                // デフォルトで無効
+                state.animationsEnabled = false;
+                animationToggle.checked = false;
+            }
+            
+            updateAnimationSetting();
+            
+            // ローカルストレージから苦手な単語を読み込む
+            const savedWeakness = localStorage.getItem('flashcard_weakness');
+            if (savedWeakness) {
+                state.weaknessCards = JSON.parse(savedWeakness);
+            }
+            
+            // 履歴データを読み込む
+            loadHistoryData();
+        });
+
+        // ページを離れる前にデータを保存
+        window.addEventListener('beforeunload', function() {
+            localStorage.setItem('flashcard_weakness', JSON.stringify(state.weaknessCards));
+            localStorage.setItem('flashcard_animations', state.animationsEnabled);
         });
     </script>
 </body>

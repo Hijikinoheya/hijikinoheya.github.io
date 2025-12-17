@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JSONデータ生成ツール</title>
+    <title>表形式JSONデータ生成ツール</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -13,23 +14,23 @@
         }
         
         body {
-            background: linear-gradient(135deg, #1a2980 0%, #26d0ce 100%);
+            background: linear-gradient(135deg, #0d47a1 0%, #1976d2 100%);
             min-height: 100vh;
             padding: 20px;
             color: #333;
         }
         
         .container {
-            max-width: 900px;
+            max-width: 1100px;
             margin: 0 auto;
-            background-color: rgba(255, 255, 255, 0.95);
+            background-color: rgba(255, 255, 255, 0.98);
             border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
             overflow: hidden;
         }
         
         header {
-            background: linear-gradient(to right, #1a2980, #26d0ce);
+            background: linear-gradient(to right, #0d47a1, #1976d2);
             color: white;
             padding: 25px 20px;
             text-align: center;
@@ -40,20 +41,26 @@
             margin-bottom: 10px;
         }
         
+        .copyright {
+            font-size: 0.8rem;
+            opacity: 0.7;
+            margin-top: 5px;
+        }
+        
         .content {
             padding: 30px;
         }
         
         .instructions {
-            background-color: #f0f8ff;
+            background-color: #e3f2fd;
             padding: 20px;
             border-radius: 15px;
             margin-bottom: 25px;
-            border-left: 5px solid #26d0ce;
+            border-left: 5px solid #1976d2;
         }
         
         .instructions h2 {
-            color: #1a2980;
+            color: #0d47a1;
             margin-bottom: 10px;
         }
         
@@ -70,38 +77,59 @@
             margin-bottom: 25px;
         }
         
-        textarea {
+        .table-container {
+            overflow-x: auto;
+            margin: 20px 0;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        table {
             width: 100%;
-            height: 250px;
+            border-collapse: collapse;
+            background-color: white;
+        }
+        
+        th {
+            background-color: #0d47a1;
+            color: white;
             padding: 15px;
-            border: 2px solid #ddd;
-            border-radius: 10px;
+            text-align: left;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+        
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
             font-size: 1rem;
-            resize: vertical;
-            margin-bottom: 15px;
         }
         
-        textarea:focus {
+        input[type="text"]:focus {
             outline: none;
-            border-color: #26d0ce;
-            box-shadow: 0 0 0 3px rgba(38, 208, 206, 0.2);
+            border-color: #1976d2;
+            box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.2);
         }
         
-        .format-example {
-            background-color: #f9f9f9;
-            padding: 15px;
-            border-radius: 10px;
-            font-family: monospace;
-            font-size: 0.9rem;
-            margin-top: 10px;
-            border: 1px dashed #ccc;
-        }
-        
-        .controls {
+        .table-controls {
             display: flex;
-            gap: 15px;
+            justify-content: space-between;
+            align-items: center;
+            margin: 20px 0;
             flex-wrap: wrap;
-            margin-bottom: 25px;
+            gap: 15px;
         }
         
         button {
@@ -117,44 +145,66 @@
             gap: 8px;
         }
         
+        #add-row-btn {
+            background: linear-gradient(to right, #43a047, #66bb6a);
+            color: white;
+        }
+        
+        #add-row-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(67, 160, 71, 0.4);
+        }
+        
         #generate-btn {
-            background: linear-gradient(to right, #1a2980, #26d0ce);
+            background: linear-gradient(to right, #0d47a1, #1976d2);
             color: white;
         }
         
         #generate-btn:hover {
             transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(26, 41, 128, 0.4);
+            box-shadow: 0 5px 15px rgba(13, 71, 161, 0.4);
         }
         
         #copy-btn {
-            background: linear-gradient(to right, #00b09b, #96c93d);
+            background: linear-gradient(to right, #ff9800, #ffb74d);
             color: white;
         }
         
         #copy-btn:hover {
             transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(0, 176, 155, 0.4);
+            box-shadow: 0 5px 15px rgba(255, 152, 0, 0.4);
         }
         
         #download-btn {
-            background: linear-gradient(to right, #8A2BE2, #9370DB);
+            background: linear-gradient(to right, #7b1fa2, #9c27b0);
             color: white;
         }
         
         #download-btn:hover {
             transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(138, 43, 226, 0.4);
+            box-shadow: 0 5px 15px rgba(123, 31, 162, 0.4);
         }
         
         #clear-btn {
-            background: linear-gradient(to right, #ff416c, #ff4b2b);
+            background: linear-gradient(to right, #e53935, #ef5350);
             color: white;
         }
         
         #clear-btn:hover {
             transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(255, 65, 108, 0.4);
+            box-shadow: 0 5px 15px rgba(229, 57, 53, 0.4);
+        }
+        
+        .delete-row-btn {
+            background-color: #ffebee;
+            color: #d32f2f;
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .delete-row-btn:hover {
+            background-color: #ffcdd2;
         }
         
         .result {
@@ -162,13 +212,13 @@
         }
         
         .result h2 {
-            color: #1a2980;
+            color: #0d47a1;
             margin-bottom: 15px;
         }
         
         #json-output {
-            background-color: #2d2d2d;
-            color: #f8f8f2;
+            background-color: #263238;
+            color: #eceff1;
             padding: 20px;
             border-radius: 10px;
             font-family: 'Courier New', monospace;
@@ -192,18 +242,26 @@
         .back-link {
             display: inline-block;
             margin-top: 15px;
-            color: #1a2980;
+            color: #0d47a1;
             text-decoration: none;
             font-weight: 600;
+            padding: 10px 20px;
+            border-radius: 50px;
+            background-color: #e3f2fd;
+            transition: all 0.3s;
         }
         
         .back-link:hover {
-            text-decoration: underline;
+            background-color: #bbdefb;
+            transform: translateY(-3px);
+            text-decoration: none;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
         
         @media (max-width: 768px) {
-            .controls {
+            .table-controls {
                 flex-direction: column;
+                align-items: stretch;
             }
             
             button {
@@ -213,6 +271,10 @@
             .container {
                 border-radius: 15px;
             }
+            
+            .content {
+                padding: 20px 15px;
+            }
         }
         
         @media (max-width: 480px) {
@@ -220,28 +282,40 @@
                 padding: 10px;
             }
             
-            .content {
-                padding: 20px 15px;
-            }
-            
             h1 {
                 font-size: 1.5rem;
             }
+            
+            th, td {
+                padding: 10px;
+            }
+        }
+        
+        /* アニメーション */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>フラッシュカードJSONデータ生成ツール</h1>
-            <p>単語データをJSON形式に変換してダウンロード</p>
+            <h1><i class="fas fa-table"></i> 表形式JSONデータ生成ツール</h1>
+            <p>表形式で単語データを入力し、JSON形式に変換してダウンロード</p>
+            <p class="copyright">© Team Hijikinoheya 2025</p>
         </header>
         
         <div class="content">
             <div class="instructions">
-                <h2>使い方</h2>
+                <h2><i class="fas fa-info-circle"></i> 使い方</h2>
                 <ol>
-                    <li>下のテキストエリアに単語データを入力します（英単語と日本語の意味をタブまたはカンマで区切ってください）</li>
+                    <li>表に英単語、日本語の意味、例文（任意）を入力します</li>
+                    <li>「行を追加」ボタンで新しい行を追加できます</li>
                     <li>「JSONを生成」ボタンをクリックしてデータを変換します</li>
                     <li>生成されたJSONをコピーするか、「JSONをダウンロード」ボタンでファイルを保存します</li>
                     <li>生成したJSONファイルをフラッシュカードアプリで使用できます</li>
@@ -249,138 +323,43 @@
             </div>
             
             <div class="data-input">
-                <h2>単語データ入力</h2>
-                <p>英単語と日本語の意味をタブ、カンマ、またはスペースで区切って入力してください（1行に1ペア）</p>
+                <h2><i class="fas fa-edit"></i> 単語データ入力</h2>
+                <p>表形式で単語データを入力してください。例文は任意です。</p>
                 
-                <textarea id="word-input" placeholder="例:
-Blunder    大失敗
-Cancel     取り消す
-Continuous 連続した
-Distribute 配る
-Document   文書
-...">
-Blunder	大失敗
-Cancel	取り消す
-Continuous	連続した
-Distribute	配る
-Document	文書
-Fragile	壊れやすい
-Myth	神話・作り話
-Reject	拒否する
-Scuffle	取っ組み合い
-Solitary	孤独の
-Temporary	一時的な
-Veteran	ベテラン
-Abandon	見捨てる
-Assault	暴行／襲撃
-Convert	変える
-Dispute	争う／論争
-Impressive	印象的な
-Justify	正当化する
-Misleading	紛らわしい
-Numerous	多数の
-Productive	生産的な
-Shrewd	賢い／抜け目のない
-Strategy	戦略
-Villain	悪役
-Bluff	はったりをかける
-Cautious	用心深い
-Consist	成り立つ
-Despise	軽蔑する
-Haven	安全な場所
-Miniature	小型の／ミニチュア
-Monarch	君主
-Obstacle	障害
-Postpone	延期する
-Straggle	散らばる／遅れる
-Treacherous	裏切りの／危険な
-Vivid	鮮明な
-Aggressive	攻撃的な
-Associate	関連づける／仲間
-Deceive	だます
-Emigrate	移住する
-Flexible	柔軟な
-Glamour	魅力
-Hazy	かすんだ
-Linger	ぐずぐず残る
-Luxurious	豪華な
-Mishap	事故／不運
-Overwhelm	圧倒する
-Span	期間／範囲
-Blemish	汚点
-Blunt	鈍い／率直な
-Capable	能力がある
-Conclude	結論づける
-Detect	感知する
-Fatigue	疲労
-Festive	祝祭の
-Hospitality	もてなし
-Nomad	遊牧民
-Persecute	迫害する
-Supreme	最高の
-Transport	輸送する
-Accomplish	達成する
-Apparent	明らかな
-Capacity	能力／容量
-Civilian	民間人
-Conceal	隠す
-Duplicate	複製する
-Keen	熱心な／鋭い
-Provoke	引き起こす／刺激する
-Spurt	噴き出す／急に速くなる
-Undoing	破滅の原因
-Vast	広大な
-Withdraw	引き出す／撤退する
-Reservation	保留／インディアン居留地
-Poverty	貧困
-Displacement	追い立て／移動
-Bullying	いじめ
-Isolation	孤立
-Racism	人種差別
-Grief	深い悲しみ
-Courage	勇気
-Opportunity	機会
-Education	教育
-Belonging	所属感
-Humour	ユーモア
-Stereotype	固定観念
-Determination	決意
-Empowerment	権限付与／力を与えること
-Identity	自己認識／アイデンティティ
-Resilience	回復力
-Alienation	疎外
-Assimilation	同化
-Oppression	抑圧
-Tragedy	悲劇
-Community	コミュニティ／共同体
-Voice	声／意見
-Cultural Heritage	文化遺産
-Intrigue	興味を引く／陰謀
-Disconcerting	当惑させる
-Requisite	必要条件
-Resonate	共鳴する
-Nominal	名目上の
-Recap	要約する
-Repatriate	本国へ帰す
-Chide	たしなめる
-Expiration	期限切れ
-Despondent	落胆した
-Contribute	貢献する
-Immigrate	移住する
-Reaction	反応
-Relocate	移転する
-Shifting	移り変わる</textarea>
+                <div class="table-controls">
+                    <button id="add-row-btn">
+                        <i class="fas fa-plus-circle"></i> 行を追加
+                    </button>
+                    <button id="load-example-btn">
+                        <i class="fas fa-file-alt"></i> サンプルデータを読み込み
+                    </button>
+                </div>
                 
-                <div class="format-example">
-                    対応形式:<br>
-                    1. タブ区切り: Blunder[タブ]大失敗<br>
-                    2. カンマ区切り: Blunder,大失敗<br>
-                    3. スペース区切り: Blunder 大失敗<br>
-                    4. 複数スペース区切り: Blunder    大失敗
+                <div class="table-container">
+                    <table id="word-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 5%;">No.</th>
+                                <th style="width: 25%;">英単語</th>
+                                <th style="width: 25%;">日本語の意味</th>
+                                <th style="width: 40%;">例文（任意）</th>
+                                <th style="width: 5%;">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-body">
+                            <!-- 行がここに動的に追加されます -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="table-controls">
+                    <div style="color: #666; font-size: 0.9rem;">
+                        <i class="fas fa-exclamation-circle"></i> 行を削除するには、各行の右側の削除ボタンをクリックしてください
+                    </div>
                 </div>
             </div>
             
-            <div class="controls">
+            <div class="table-controls">
                 <button id="generate-btn">
                     <i class="fas fa-cogs"></i> JSONを生成
                 </button>
@@ -391,18 +370,18 @@ Shifting	移り変わる</textarea>
                     <i class="fas fa-download"></i> JSONをダウンロード
                 </button>
                 <button id="clear-btn">
-                    <i class="fas fa-trash-alt"></i> クリア
+                    <i class="fas fa-trash-alt"></i> すべてクリア
                 </button>
             </div>
             
             <div class="result">
-                <h2>生成されたJSONデータ</h2>
+                <h2><i class="fas fa-code"></i> 生成されたJSONデータ</h2>
                 <div id="json-output">ここにJSONデータが表示されます...</div>
             </div>
         </div>
         
         <footer>
-            <p>フラッシュカードJSONデータ生成ツール &copy; 2023</p>
+            <p>© Team Hijikinoheya 2025 - 表形式JSONデータ生成ツール</p>
             <a href="index.html" class="back-link">
                 <i class="fas fa-arrow-left"></i> フラッシュカードアプリに戻る
             </a>
@@ -410,80 +389,144 @@ Shifting	移り変わる</textarea>
     </div>
 
     <script>
-        // デフォルトの入力データ（提供された単語リスト）
-        const defaultInput = document.getElementById('word-input').value;
+        // サンプルデータ
+        const sampleData = [
+            {english: "Blunder", japanese: "大失敗", example: "He made a serious blunder in the negotiation."},
+            {english: "Cancel", japanese: "取り消す", example: "I need to cancel my appointment due to an emergency."},
+            {english: "Continuous", japanese: "連続した", example: "The continuous rain caused flooding in the area."},
+            {english: "Distribute", japanese: "配る", example: "Volunteers will distribute food to the homeless."},
+            {english: "Document", japanese: "文書", example: "Please read the document carefully before signing."},
+            {english: "Fragile", japanese: "壊れやすい", example: "The package contains fragile items, so handle with care."},
+            {english: "Myth", japanese: "神話・作り話", example: "The idea that carrots improve night vision is a myth."},
+            {english: "Reject", japanese: "拒否する", example: "The committee decided to reject the proposal."},
+            {english: "Scuffle", japanese: "取っ組み合い", example: "A scuffle broke out between the two players."},
+            {english: "Solitary", japanese: "孤独の", example: "He led a solitary life in the remote cabin."}
+        ];
         
-        // JSON生成関数
-        document.getElementById('generate-btn').addEventListener('click', function() {
-            const inputText = document.getElementById('word-input').value.trim();
-            if (!inputText) {
-                alert('単語データを入力してください');
+        // テーブルの行カウンター
+        let rowCounter = 1;
+        
+        // テーブルに行を追加する関数
+        function addTableRow(english = "", japanese = "", example = "") {
+            const tbody = document.getElementById('table-body');
+            const row = document.createElement('tr');
+            row.className = 'fade-in';
+            row.innerHTML = `
+                <td>${rowCounter}</td>
+                <td><input type="text" class="english-input" value="${english}" placeholder="例: Apple"></td>
+                <td><input type="text" class="japanese-input" value="${japanese}" placeholder="例: りんご"></td>
+                <td><input type="text" class="example-input" value="${example}" placeholder="例: I eat an apple every day."></td>
+                <td><button type="button" class="delete-row-btn"><i class="fas fa-trash"></i></button></td>
+            `;
+            tbody.appendChild(row);
+            rowCounter++;
+            
+            // 削除ボタンのイベントを追加
+            row.querySelector('.delete-row-btn').addEventListener('click', function() {
+                row.remove();
+                updateRowNumbers();
+            });
+        }
+        
+        // 行番号を更新する関数
+        function updateRowNumbers() {
+            const rows = document.querySelectorAll('#table-body tr');
+            rowCounter = 1;
+            rows.forEach(row => {
+                row.cells[0].textContent = rowCounter;
+                rowCounter++;
+            });
+        }
+        
+        // 初期行を追加
+        function initializeTable() {
+            // 最初に5つの空行を追加
+            for (let i = 0; i < 5; i++) {
+                addTableRow();
+            }
+        }
+        
+        // サンプルデータを読み込む
+        function loadSampleData() {
+            // テーブルをクリア
+            document.getElementById('table-body').innerHTML = '';
+            rowCounter = 1;
+            
+            // サンプルデータを追加
+            sampleData.forEach(item => {
+                addTableRow(item.english, item.japanese, item.example);
+            });
+            
+            // JSONを生成
+            generateJSON();
+        }
+        
+        // テーブルデータからJSONを生成する関数
+        function generateJSON() {
+            const rows = document.querySelectorAll('#table-body tr');
+            const flashcards = [];
+            
+            rows.forEach(row => {
+                const english = row.querySelector('.english-input').value.trim();
+                const japanese = row.querySelector('.japanese-input').value.trim();
+                const example = row.querySelector('.example-input').value.trim();
+                
+                if (english && japanese) {
+                    const card = {
+                        english: english,
+                        japanese: japanese
+                    };
+                    
+                    if (example) {
+                        card.example = example;
+                    }
+                    
+                    flashcards.push(card);
+                }
+            });
+            
+            if (flashcards.length === 0) {
+                document.getElementById('json-output').textContent = '有効なデータがありません。英単語と日本語の意味を入力してください。';
+                document.getElementById('json-output').style.color = '#ff6b6b';
                 return;
             }
             
-            try {
-                const flashcards = parseWordData(inputText);
-                const jsonOutput = JSON.stringify(flashcards, null, 2);
-                document.getElementById('json-output').textContent = jsonOutput;
-                document.getElementById('json-output').style.color = '#f8f8f2';
-            } catch (error) {
-                document.getElementById('json-output').textContent = 'エラー: データの解析に失敗しました。フォーマットを確認してください。';
-                document.getElementById('json-output').style.color = '#ff6b6b';
-                console.error(error);
-            }
-        });
-        
-        // データ解析関数
-        function parseWordData(text) {
-            const lines = text.split('\n');
-            const flashcards = [];
-            
-            for (let line of lines) {
-                line = line.trim();
-                if (!line) continue;
-                
-                // タブ、カンマ、または複数スペースで分割
-                let parts;
-                if (line.includes('\t')) {
-                    parts = line.split('\t');
-                } else if (line.includes(',')) {
-                    parts = line.split(',');
-                } else {
-                    // スペースで分割（連続するスペースを1つとして扱う）
-                    parts = line.split(/\s+/);
-                }
-                
-                // 空の要素を除去
-                parts = parts.filter(part => part.trim() !== '');
-                
-                if (parts.length >= 2) {
-                    const english = parts[0].trim();
-                    const japanese = parts[1].trim();
-                    
-                    // 「ー」や空の単語をスキップ
-                    if (english !== 'ー' && english !== '-' && english !== '') {
-                        flashcards.push({
-                            english: english,
-                            japanese: japanese
-                        });
-                    }
-                }
-            }
-            
-            if (flashcards.length === 0) {
-                throw new Error('有効な単語データが見つかりませんでした');
-            }
+            const jsonOutput = JSON.stringify(flashcards, null, 2);
+            document.getElementById('json-output').textContent = jsonOutput;
+            document.getElementById('json-output').style.color = '#eceff1';
             
             return flashcards;
         }
         
-        // JSONコピー関数
+        // JSON生成ボタン
+        document.getElementById('generate-btn').addEventListener('click', function() {
+            generateJSON();
+        });
+        
+        // 行追加ボタン
+        document.getElementById('add-row-btn').addEventListener('click', function() {
+            addTableRow();
+        });
+        
+        // サンプルデータ読み込みボタン
+        document.getElementById('load-example-btn').addEventListener('click', function() {
+            if (confirm('サンプルデータを読み込みますか？現在のデータは失われます。')) {
+                loadSampleData();
+            }
+        });
+        
+        // JSONコピーボタン
         document.getElementById('copy-btn').addEventListener('click', function() {
             const jsonOutput = document.getElementById('json-output');
             const text = jsonOutput.textContent;
             
             if (!text || text === 'ここにJSONデータが表示されます...') {
                 alert('生成されたJSONデータがありません。まずJSONを生成してください。');
+                return;
+            }
+            
+            if (text.includes('有効なデータがありません')) {
+                alert('有効なデータがありません。データを入力してください。');
                 return;
             }
             
@@ -495,13 +538,18 @@ Shifting	移り変わる</textarea>
             });
         });
         
-        // JSONダウンロード関数
+        // JSONダウンロードボタン
         document.getElementById('download-btn').addEventListener('click', function() {
             const jsonOutput = document.getElementById('json-output');
             const text = jsonOutput.textContent;
             
             if (!text || text === 'ここにJSONデータが表示されます...') {
                 alert('生成されたJSONデータがありません。まずJSONを生成してください。');
+                return;
+            }
+            
+            if (text.includes('有効なデータがありません')) {
+                alert('有効なデータがありません。データを入力してください。');
                 return;
             }
             
@@ -524,21 +572,26 @@ Shifting	移り変わる</textarea>
             }
         });
         
-        // クリア関数
+        // クリアボタン
         document.getElementById('clear-btn').addEventListener('click', function() {
-            if (confirm('入力データをクリアしますか？')) {
-                document.getElementById('word-input').value = '';
+            if (confirm('すべてのデータをクリアしますか？この操作は元に戻せません。')) {
+                document.getElementById('table-body').innerHTML = '';
+                rowCounter = 1;
+                initializeTable();
                 document.getElementById('json-output').textContent = 'ここにJSONデータが表示されます...';
-                document.getElementById('json-output').style.color = '#f8f8f2';
+                document.getElementById('json-output').style.color = '#eceff1';
             }
         });
         
-        // ページ読み込み時にデフォルトデータでJSONを生成
+        // ページ読み込み時にテーブルを初期化
         document.addEventListener('DOMContentLoaded', function() {
-            // 少し遅延させて実行（UIが読み込まれてから）
+            initializeTable();
+            
+            // 少し遅延させてサンプルデータを表示
             setTimeout(() => {
-                document.getElementById('generate-btn').click();
-            }, 500);
+                // 最初は空のテーブルのままにしておく
+                // loadSampleData(); // コメントアウト：最初からサンプルデータを読み込みたい場合はこのコメントを外す
+            }, 100);
         });
     </script>
 </body>
