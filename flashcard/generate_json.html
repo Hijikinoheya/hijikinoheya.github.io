@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSONデータ生成ツール</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Hiragino Kaku Gothic ProN', Meiryo, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2980 0%, #26d0ce 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(to right, #1a2980, #26d0ce);
+            color: white;
+            padding: 25px 20px;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .instructions {
+            background-color: #f0f8ff;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            border-left: 5px solid #26d0ce;
+        }
+        
+        .instructions h2 {
+            color: #1a2980;
+            margin-bottom: 10px;
+        }
+        
+        .instructions ol {
+            margin-left: 20px;
+            margin-top: 10px;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
+        }
+        
+        .data-input {
+            margin-bottom: 25px;
+        }
+        
+        textarea {
+            width: 100%;
+            height: 250px;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 1rem;
+            resize: vertical;
+            margin-bottom: 15px;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: #26d0ce;
+            box-shadow: 0 0 0 3px rgba(38, 208, 206, 0.2);
+        }
+        
+        .format-example {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 10px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            border: 1px dashed #ccc;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+        }
+        
+        button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        #generate-btn {
+            background: linear-gradient(to right, #1a2980, #26d0ce);
+            color: white;
+        }
+        
+        #generate-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(26, 41, 128, 0.4);
+        }
+        
+        #copy-btn {
+            background: linear-gradient(to right, #00b09b, #96c93d);
+            color: white;
+        }
+        
+        #copy-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 176, 155, 0.4);
+        }
+        
+        #download-btn {
+            background: linear-gradient(to right, #8A2BE2, #9370DB);
+            color: white;
+        }
+        
+        #download-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(138, 43, 226, 0.4);
+        }
+        
+        #clear-btn {
+            background: linear-gradient(to right, #ff416c, #ff4b2b);
+            color: white;
+        }
+        
+        #clear-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(255, 65, 108, 0.4);
+        }
+        
+        .result {
+            margin-top: 25px;
+        }
+        
+        .result h2 {
+            color: #1a2980;
+            margin-bottom: 15px;
+        }
+        
+        #json-output {
+            background-color: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            min-height: 150px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 0.9rem;
+            border-top: 1px solid #eee;
+            margin-top: 20px;
+        }
+        
+        .back-link {
+            display: inline-block;
+            margin-top: 15px;
+            color: #1a2980;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 768px) {
+            .controls {
+                flex-direction: column;
+            }
+            
+            button {
+                width: 100%;
+            }
+            
+            .container {
+                border-radius: 15px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            .content {
+                padding: 20px 15px;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>フラッシュカードJSONデータ生成ツール</h1>
+            <p>単語データをJSON形式に変換してダウンロード</p>
+        </header>
+        
+        <div class="content">
+            <div class="instructions">
+                <h2>使い方</h2>
+                <ol>
+                    <li>下のテキストエリアに単語データを入力します（英単語と日本語の意味をタブまたはカンマで区切ってください）</li>
+                    <li>「JSONを生成」ボタンをクリックしてデータを変換します</li>
+                    <li>生成されたJSONをコピーするか、「JSONをダウンロード」ボタンでファイルを保存します</li>
+                    <li>生成したJSONファイルをフラッシュカードアプリで使用できます</li>
+                </ol>
+            </div>
+            
+            <div class="data-input">
+                <h2>単語データ入力</h2>
+                <p>英単語と日本語の意味をタブ、カンマ、またはスペースで区切って入力してください（1行に1ペア）</p>
+                
+                <textarea id="word-input" placeholder="例:
+Blunder    大失敗
+Cancel     取り消す
+Continuous 連続した
+Distribute 配る
+Document   文書
+...">
+Blunder	大失敗
+Cancel	取り消す
+Continuous	連続した
+Distribute	配る
+Document	文書
+Fragile	壊れやすい
+Myth	神話・作り話
+Reject	拒否する
+Scuffle	取っ組み合い
+Solitary	孤独の
+Temporary	一時的な
+Veteran	ベテラン
+Abandon	見捨てる
+Assault	暴行／襲撃
+Convert	変える
+Dispute	争う／論争
+Impressive	印象的な
+Justify	正当化する
+Misleading	紛らわしい
+Numerous	多数の
+Productive	生産的な
+Shrewd	賢い／抜け目のない
+Strategy	戦略
+Villain	悪役
+Bluff	はったりをかける
+Cautious	用心深い
+Consist	成り立つ
+Despise	軽蔑する
+Haven	安全な場所
+Miniature	小型の／ミニチュア
+Monarch	君主
+Obstacle	障害
+Postpone	延期する
+Straggle	散らばる／遅れる
+Treacherous	裏切りの／危険な
+Vivid	鮮明な
+Aggressive	攻撃的な
+Associate	関連づける／仲間
+Deceive	だます
+Emigrate	移住する
+Flexible	柔軟な
+Glamour	魅力
+Hazy	かすんだ
+Linger	ぐずぐず残る
+Luxurious	豪華な
+Mishap	事故／不運
+Overwhelm	圧倒する
+Span	期間／範囲
+Blemish	汚点
+Blunt	鈍い／率直な
+Capable	能力がある
+Conclude	結論づける
+Detect	感知する
+Fatigue	疲労
+Festive	祝祭の
+Hospitality	もてなし
+Nomad	遊牧民
+Persecute	迫害する
+Supreme	最高の
+Transport	輸送する
+Accomplish	達成する
+Apparent	明らかな
+Capacity	能力／容量
+Civilian	民間人
+Conceal	隠す
+Duplicate	複製する
+Keen	熱心な／鋭い
+Provoke	引き起こす／刺激する
+Spurt	噴き出す／急に速くなる
+Undoing	破滅の原因
+Vast	広大な
+Withdraw	引き出す／撤退する
+Reservation	保留／インディアン居留地
+Poverty	貧困
+Displacement	追い立て／移動
+Bullying	いじめ
+Isolation	孤立
+Racism	人種差別
+Grief	深い悲しみ
+Courage	勇気
+Opportunity	機会
+Education	教育
+Belonging	所属感
+Humour	ユーモア
+Stereotype	固定観念
+Determination	決意
+Empowerment	権限付与／力を与えること
+Identity	自己認識／アイデンティティ
+Resilience	回復力
+Alienation	疎外
+Assimilation	同化
+Oppression	抑圧
+Tragedy	悲劇
+Community	コミュニティ／共同体
+Voice	声／意見
+Cultural Heritage	文化遺産
+Intrigue	興味を引く／陰謀
+Disconcerting	当惑させる
+Requisite	必要条件
+Resonate	共鳴する
+Nominal	名目上の
+Recap	要約する
+Repatriate	本国へ帰す
+Chide	たしなめる
+Expiration	期限切れ
+Despondent	落胆した
+Contribute	貢献する
+Immigrate	移住する
+Reaction	反応
+Relocate	移転する
+Shifting	移り変わる</textarea>
+                
+                <div class="format-example">
+                    対応形式:<br>
+                    1. タブ区切り: Blunder[タブ]大失敗<br>
+                    2. カンマ区切り: Blunder,大失敗<br>
+                    3. スペース区切り: Blunder 大失敗<br>
+                    4. 複数スペース区切り: Blunder    大失敗
+                </div>
+            </div>
+            
+            <div class="controls">
+                <button id="generate-btn">
+                    <i class="fas fa-cogs"></i> JSONを生成
+                </button>
+                <button id="copy-btn">
+                    <i class="fas fa-copy"></i> JSONをコピー
+                </button>
+                <button id="download-btn">
+                    <i class="fas fa-download"></i> JSONをダウンロード
+                </button>
+                <button id="clear-btn">
+                    <i class="fas fa-trash-alt"></i> クリア
+                </button>
+            </div>
+            
+            <div class="result">
+                <h2>生成されたJSONデータ</h2>
+                <div id="json-output">ここにJSONデータが表示されます...</div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>フラッシュカードJSONデータ生成ツール &copy; 2023</p>
+            <a href="index.html" class="back-link">
+                <i class="fas fa-arrow-left"></i> フラッシュカードアプリに戻る
+            </a>
+        </footer>
+    </div>
+
+    <script>
+        // デフォルトの入力データ（提供された単語リスト）
+        const defaultInput = document.getElementById('word-input').value;
+        
+        // JSON生成関数
+        document.getElementById('generate-btn').addEventListener('click', function() {
+            const inputText = document.getElementById('word-input').value.trim();
+            if (!inputText) {
+                alert('単語データを入力してください');
+                return;
+            }
+            
+            try {
+                const flashcards = parseWordData(inputText);
+                const jsonOutput = JSON.stringify(flashcards, null, 2);
+                document.getElementById('json-output').textContent = jsonOutput;
+                document.getElementById('json-output').style.color = '#f8f8f2';
+            } catch (error) {
+                document.getElementById('json-output').textContent = 'エラー: データの解析に失敗しました。フォーマットを確認してください。';
+                document.getElementById('json-output').style.color = '#ff6b6b';
+                console.error(error);
+            }
+        });
+        
+        // データ解析関数
+        function parseWordData(text) {
+            const lines = text.split('\n');
+            const flashcards = [];
+            
+            for (let line of lines) {
+                line = line.trim();
+                if (!line) continue;
+                
+                // タブ、カンマ、または複数スペースで分割
+                let parts;
+                if (line.includes('\t')) {
+                    parts = line.split('\t');
+                } else if (line.includes(',')) {
+                    parts = line.split(',');
+                } else {
+                    // スペースで分割（連続するスペースを1つとして扱う）
+                    parts = line.split(/\s+/);
+                }
+                
+                // 空の要素を除去
+                parts = parts.filter(part => part.trim() !== '');
+                
+                if (parts.length >= 2) {
+                    const english = parts[0].trim();
+                    const japanese = parts[1].trim();
+                    
+                    // 「ー」や空の単語をスキップ
+                    if (english !== 'ー' && english !== '-' && english !== '') {
+                        flashcards.push({
+                            english: english,
+                            japanese: japanese
+                        });
+                    }
+                }
+            }
+            
+            if (flashcards.length === 0) {
+                throw new Error('有効な単語データが見つかりませんでした');
+            }
+            
+            return flashcards;
+        }
+        
+        // JSONコピー関数
+        document.getElementById('copy-btn').addEventListener('click', function() {
+            const jsonOutput = document.getElementById('json-output');
+            const text = jsonOutput.textContent;
+            
+            if (!text || text === 'ここにJSONデータが表示されます...') {
+                alert('生成されたJSONデータがありません。まずJSONを生成してください。');
+                return;
+            }
+            
+            navigator.clipboard.writeText(text).then(() => {
+                alert('JSONデータをクリップボードにコピーしました');
+            }).catch(err => {
+                console.error('コピーに失敗しました: ', err);
+                alert('コピーに失敗しました。手動で選択してコピーしてください。');
+            });
+        });
+        
+        // JSONダウンロード関数
+        document.getElementById('download-btn').addEventListener('click', function() {
+            const jsonOutput = document.getElementById('json-output');
+            const text = jsonOutput.textContent;
+            
+            if (!text || text === 'ここにJSONデータが表示されます...') {
+                alert('生成されたJSONデータがありません。まずJSONを生成してください。');
+                return;
+            }
+            
+            try {
+                // JSONとして正しいか確認
+                JSON.parse(text);
+                
+                const blob = new Blob([text], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'flashcards.json';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            } catch (error) {
+                alert('無効なJSONデータです。まずJSONを生成してください。');
+                console.error(error);
+            }
+        });
+        
+        // クリア関数
+        document.getElementById('clear-btn').addEventListener('click', function() {
+            if (confirm('入力データをクリアしますか？')) {
+                document.getElementById('word-input').value = '';
+                document.getElementById('json-output').textContent = 'ここにJSONデータが表示されます...';
+                document.getElementById('json-output').style.color = '#f8f8f2';
+            }
+        });
+        
+        // ページ読み込み時にデフォルトデータでJSONを生成
+        document.addEventListener('DOMContentLoaded', function() {
+            // 少し遅延させて実行（UIが読み込まれてから）
+            setTimeout(() => {
+                document.getElementById('generate-btn').click();
+            }, 500);
+        });
+    </script>
+</body>
+</html>

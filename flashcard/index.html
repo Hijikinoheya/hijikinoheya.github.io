@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>フラッシュカード学習アプリ</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Hiragino Kaku Gothic ProN', Meiryo, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(to right, #4a00e0, #8e2de2);
+            color: white;
+            padding: 25px 20px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+
+        h1 i {
+            margin-right: 10px;
+        }
+
+        .subtitle {
+            opacity: 0.9;
+            font-size: 1rem;
+        }
+
+        .app-section {
+            display: none;
+            padding: 25px;
+        }
+
+        .active-section {
+            display: block;
+        }
+
+        /* ファイル選択セクション */
+        .file-selector {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .file-input-wrapper {
+            margin: 20px 0;
+            padding: 20px;
+            border: 2px dashed #8e2de2;
+            border-radius: 15px;
+            background-color: #f8f9ff;
+            transition: all 0.3s;
+        }
+
+        .file-input-wrapper:hover {
+            background-color: #eef2ff;
+            border-color: #4a00e0;
+        }
+
+        .file-label {
+            display: inline-block;
+            background: linear-gradient(to right, #4a00e0, #8e2de2);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            margin-bottom: 15px;
+        }
+
+        .file-label:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(142, 45, 226, 0.4);
+        }
+
+        .file-name {
+            margin-top: 10px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .default-data-btn {
+            background: linear-gradient(to right, #00b09b, #96c93d);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .default-data-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 176, 155, 0.4);
+        }
+
+        /* 設定セクション */
+        .settings {
+            background-color: #f8f9ff;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+        }
+
+        .setting-group {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .mode-btn {
+            flex: 1;
+            min-width: 150px;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            background-color: white;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .mode-btn.active {
+            background: linear-gradient(to right, #4a00e0, #8e2de2);
+            color: white;
+            box-shadow: 0 5px 15px rgba(142, 45, 226, 0.3);
+        }
+
+        .mode-btn:hover:not(.active) {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* フラッシュカードセクション */
+        .card-container {
+            perspective: 1000px;
+            height: 350px;
+            margin: 20px 0 30px;
+        }
+
+        .card {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.8s;
+            cursor: pointer;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .card.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .card-front {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+        }
+
+        .card-back {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            color: #333;
+            transform: rotateY(180deg);
+        }
+
+        .card-word {
+            font-size: 2.8rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #4a00e0;
+        }
+
+        .card-hint {
+            font-size: 1rem;
+            color: #666;
+            margin-top: 10px;
+            font-style: italic;
+        }
+
+        .card-meaning {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #d31027;
+        }
+
+        /* コントロール */
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .nav-btn {
+            background: linear-gradient(to right, #4a00e0, #8e2de2);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+            min-width: 140px;
+            justify-content: center;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(142, 45, 226, 0.4);
+        }
+
+        .nav-btn#prev-btn {
+            background: linear-gradient(to right, #8A2BE2, #9370DB);
+        }
+
+        .nav-btn#flip-btn {
+            background: linear-gradient(to right, #00b09b, #96c93d);
+        }
+
+        .progress {
+            text-align: center;
+            margin: 15px 0;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background-color: #e0e0e0;
+            border-radius: 4px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(to right, #4a00e0, #8e2de2);
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        /* フッター */
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 0.9rem;
+            border-top: 1px solid #eee;
+            margin-top: 20px;
+        }
+
+        .back-btn {
+            background-color: #f8f9ff;
+            color: #555;
+            border: 1px solid #ddd;
+            padding: 10px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            margin-top: 15px;
+        }
+
+        .back-btn:hover {
+            background-color: #eef2ff;
+        }
+
+        /* レスポンシブ */
+        @media (max-width: 768px) {
+            .container {
+                border-radius: 15px;
+            }
+            
+            .card-container {
+                height: 300px;
+            }
+            
+            .card-word {
+                font-size: 2.2rem;
+            }
+            
+            .card-meaning {
+                font-size: 1.8rem;
+            }
+            
+            .controls {
+                flex-direction: column;
+            }
+            
+            .nav-btn {
+                width: 100%;
+            }
+            
+            .setting-group {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            .app-section {
+                padding: 20px 15px;
+            }
+            
+            .card-container {
+                height: 250px;
+            }
+            
+            .card-word {
+                font-size: 1.8rem;
+            }
+            
+            .card-meaning {
+                font-size: 1.5rem;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+        }
+
+        /* アニメーション */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-layer-group"></i>フラッシュカード学習アプリ</h1>
+            <p class="subtitle">JSONデータを選択して学習を始めましょう</p>
+        </header>
+
+        <!-- ファイル選択セクション -->
+        <section id="file-select-section" class="app-section active-section">
+            <div class="file-selector">
+                <h2><i class="fas fa-file-import"></i> 学習データを選択</h2>
+                <p>JSONファイルをアップロードするか、デフォルトデータを使用してください</p>
+                
+                <div class="file-input-wrapper">
+                    <label for="json-file" class="file-label">
+                        <i class="fas fa-upload"></i> JSONファイルを選択
+                    </label>
+                    <input type="file" id="json-file" accept=".json" style="display: none;">
+                    <div class="file-name" id="file-name">ファイルが選択されていません</div>
+                </div>
+                
+                <button id="use-default-data" class="default-data-btn">
+                    <i class="fas fa-database"></i> デフォルトデータを使用
+                </button>
+            </div>
+        </section>
+
+        <!-- 設定セクション -->
+        <section id="settings-section" class="app-section">
+            <div class="settings">
+                <h2><i class="fas fa-cog"></i> 学習設定</h2>
+                <p>学習モードを選択してください</p>
+                
+                <div class="setting-group">
+                    <button id="sequential-mode" class="mode-btn active">
+                        <i class="fas fa-sort-amount-down"></i> 順番モード
+                    </button>
+                    <button id="random-mode" class="mode-btn">
+                        <i class="fas fa-random"></i> ランダムモード
+                    </button>
+                </div>
+                
+                <button id="start-learning" class="nav-btn" style="margin-top: 20px;">
+                    <i class="fas fa-play-circle"></i> 学習を開始する
+                </button>
+            </div>
+            
+            <button id="back-to-file" class="back-btn">
+                <i class="fas fa-arrow-left"></i> データ選択に戻る
+            </button>
+        </section>
+
+        <!-- フラッシュカードセクション -->
+        <section id="flashcard-section" class="app-section">
+            <h2 style="text-align: center; margin-bottom: 20px;"><i class="fas fa-layer-group"></i> フラッシュカード</h2>
+            
+            <div class="progress">
+                <span id="card-counter">0/0</span>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+            </div>
+            
+            <div class="card-container">
+                <div class="card" id="card">
+                    <div class="card-front">
+                        <div class="card-word" id="card-word">単語</div>
+                        <div class="card-hint">タップして意味を表示</div>
+                    </div>
+                    <div class="card-back">
+                        <div class="card-meaning" id="card-meaning">意味</div>
+                        <div class="card-hint">タップして単語を表示</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="controls">
+                <button id="prev-btn" class="nav-btn">
+                    <i class="fas fa-arrow-left"></i> 前のカード
+                </button>
+                <button id="flip-btn" class="nav-btn">
+                    <i class="fas fa-sync-alt"></i> 裏返す
+                </button>
+                <button id="next-btn" class="nav-btn">
+                    次のカード <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+            
+            <div style="text-align: center; margin-top: 20px;">
+                <button id="back-to-settings" class="back-btn">
+                    <i class="fas fa-arrow-left"></i> 設定に戻る
+                </button>
+            </div>
+        </section>
+
+        <footer>
+            <p>フラッシュカード学習アプリ &copy; 2023</p>
+            <p>単語をタップして裏返し、ボタンでカードを移動できます</p>
+        </footer>
+    </div>
+
+    <script>
+        // アプリの状態管理
+        const state = {
+            currentSection: 'file-select',
+            flashcards: [],
+            currentIndex: 0,
+            isRandomMode: false,
+            originalOrder: []
+        };
+
+        // デフォルトデータ（提供された単語リスト）
+        const defaultData = [
+            {"english": "Blunder", "japanese": "大失敗"},
+            {"english": "Cancel", "japanese": "取り消す"},
+            {"english": "Continuous", "japanese": "連続した"},
+            {"english": "Distribute", "japanese": "配る"},
+            {"english": "Document", "japanese": "文書"},
+            {"english": "Fragile", "japanese": "壊れやすい"},
+            {"english": "Myth", "japanese": "神話・作り話"},
+            {"english": "Reject", "japanese": "拒否する"},
+            {"english": "Scuffle", "japanese": "取っ組み合い"},
+            {"english": "Solitary", "japanese": "孤独の"},
+            {"english": "Temporary", "japanese": "一時的な"},
+            {"english": "Veteran", "japanese": "ベテラン"},
+            {"english": "Abandon", "japanese": "見捨てる"},
+            {"english": "Assault", "japanese": "暴行／襲撃"},
+            {"english": "Convert", "japanese": "変える"},
+            {"english": "Dispute", "japanese": "争う／論争"},
+            {"english": "Impressive", "japanese": "印象的な"},
+            {"english": "Justify", "japanese": "正当化する"},
+            {"english": "Misleading", "japanese": "紛らわしい"},
+            {"english": "Numerous", "japanese": "多数の"},
+            {"english": "Productive", "japanese": "生産的な"},
+            {"english": "Shrewd", "japanese": "賢い／抜け目のない"},
+            {"english": "Strategy", "japanese": "戦略"},
+            {"english": "Villain", "japanese": "悪役"},
+            {"english": "Bluff", "japanese": "はったりをかける"},
+            {"english": "Cautious", "japanese": "用心深い"},
+            {"english": "Consist", "japanese": "成り立つ"},
+            {"english": "Despise", "japanese": "軽蔑する"},
+            {"english": "Haven", "japanese": "安全な場所"},
+            {"english": "Miniature", "japanese": "小型の／ミニチュア"},
+            {"english": "Monarch", "japanese": "君主"},
+            {"english": "Obstacle", "japanese": "障害"},
+            {"english": "Postpone", "japanese": "延期する"},
+            {"english": "Straggle", "japanese": "散らばる／遅れる"},
+            {"english": "Treacherous", "japanese": "裏切りの／危険な"},
+            {"english": "Vivid", "japanese": "鮮明な"},
+            {"english": "Aggressive", "japanese": "攻撃的な"},
+            {"english": "Associate", "japanese": "関連づける／仲間"},
+            {"english": "Deceive", "japanese": "だます"},
+            {"english": "Emigrate", "japanese": "移住する"},
+            {"english": "Flexible", "japanese": "柔軟な"},
+            {"english": "Glamour", "japanese": "魅力"},
+            {"english": "Hazy", "japanese": "かすんだ"},
+            {"english": "Linger", "japanese": "ぐずぐず残る"},
+            {"english": "Luxurious", "japanese": "豪華な"},
+            {"english": "Mishap", "japanese": "事故／不運"},
+            {"english": "Overwhelm", "japanese": "圧倒する"},
+            {"english": "Span", "japanese": "期間／範囲"},
+            {"english": "Blemish", "japanese": "汚点"},
+            {"english": "Blunt", "japanese": "鈍い／率直な"},
+            {"english": "Capable", "japanese": "能力がある"},
+            {"english": "Conclude", "japanese": "結論づける"},
+            {"english": "Detect", "japanese": "感知する"},
+            {"english": "Fatigue", "japanese": "疲労"},
+            {"english": "Festive", "japanese": "祝祭の"},
+            {"english": "Hospitality", "japanese": "もてなし"},
+            {"english": "Nomad", "japanese": "遊牧民"},
+            {"english": "Persecute", "japanese": "迫害する"},
+            {"english": "Supreme", "japanese": "最高の"},
+            {"english": "Transport", "japanese": "輸送する"},
+            {"english": "Accomplish", "japanese": "達成する"},
+            {"english": "Apparent", "japanese": "明らかな"},
+            {"english": "Capacity", "japanese": "能力／容量"},
+            {"english": "Civilian", "japanese": "民間人"},
+            {"english": "Conceal", "japanese": "隠す"},
+            {"english": "Duplicate", "japanese": "複製する"},
+            {"english": "Keen", "japanese": "熱心な／鋭い"},
+            {"english": "Provoke", "japanese": "引き起こす／刺激する"},
+            {"english": "Spurt", "japanese": "噴き出す／急に速くなる"},
+            {"english": "Undoing", "japanese": "破滅の原因"},
+            {"english": "Vast", "japanese": "広大な"},
+            {"english": "Withdraw", "japanese": "引き出す／撤退する"},
+            {"english": "Reservation", "japanese": "保留／インディアン居留地"},
+            {"english": "Poverty", "japanese": "貧困"},
+            {"english": "Displacement", "japanese": "追い立て／移動"},
+            {"english": "Bullying", "japanese": "いじめ"},
+            {"english": "Isolation", "japanese": "孤立"},
+            {"english": "Racism", "japanese": "人種差別"},
+            {"english": "Grief", "japanese": "深い悲しみ"},
+            {"english": "Courage", "japanese": "勇気"},
+            {"english": "Opportunity", "japanese": "機会"},
+            {"english": "Education", "japanese": "教育"},
+            {"english": "Belonging", "japanese": "所属感"},
+            {"english": "Humour", "japanese": "ユーモア"},
+            {"english": "Stereotype", "japanese": "固定観念"},
+            {"english": "Determination", "japanese": "決意"},
+            {"english": "Empowerment", "japanese": "権限付与／力を与えること"},
+            {"english": "Identity", "japanese": "自己認識／アイデンティティ"},
+            {"english": "Resilience", "japanese": "回復力"},
+            {"english": "Alienation", "japanese": "疎外"},
+            {"english": "Assimilation", "japanese": "同化"},
+            {"english": "Oppression", "japanese": "抑圧"},
+            {"english": "Tragedy", "japanese": "悲劇"},
+            {"english": "Community", "japanese": "コミュニティ／共同体"},
+            {"english": "Voice", "japanese": "声／意見"},
+            {"english": "Cultural Heritage", "japanese": "文化遺産"},
+            {"english": "Intrigue", "japanese": "興味を引く／陰謀"},
+            {"english": "Disconcerting", "japanese": "当惑させる"},
+            {"english": "Requisite", "japanese": "必要条件"},
+            {"english": "Resonate", "japanese": "共鳴する"},
+            {"english": "Nominal", "japanese": "名目上の"},
+            {"english": "Recap", "japanese": "要約する"},
+            {"english": "Repatriate", "japanese": "本国へ帰す"},
+            {"english": "Chide", "japanese": "たしなめる"},
+            {"english": "Expiration", "japanese": "期限切れ"},
+            {"english": "Despondent", "japanese": "落胆した"},
+            {"english": "Contribute", "japanese": "貢献する"},
+            {"english": "Immigrate", "japanese": "移住する"},
+            {"english": "Reaction", "japanese": "反応"},
+            {"english": "Relocate", "japanese": "移転する"},
+            {"english": "Shifting", "japanese": "移り変わる"}
+        ];
+
+        // セクション切り替え
+        function showSection(sectionId) {
+            document.querySelectorAll('.app-section').forEach(section => {
+                section.classList.remove('active-section');
+            });
+            document.getElementById(sectionId).classList.add('active-section');
+            state.currentSection = sectionId;
+        }
+
+        // ファイル選択処理
+        document.getElementById('json-file').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                document.getElementById('file-name').textContent = `選択中: ${file.name}`;
+                
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    try {
+                        const data = JSON.parse(event.target.result);
+                        if (Array.isArray(data) && data.length > 0) {
+                            state.flashcards = data;
+                            showSection('settings-section');
+                        } else {
+                            alert('無効なJSONデータです。フラッシュカードデータの配列を含むJSONファイルを選択してください。');
+                        }
+                    } catch (error) {
+                        alert('JSONファイルの解析に失敗しました。正しいJSON形式か確認してください。');
+                        console.error(error);
+                    }
+                };
+                reader.readAsText(file);
+            }
+        });
+
+        // デフォルトデータ使用
+        document.getElementById('use-default-data').addEventListener('click', function() {
+            state.flashcards = [...defaultData];
+            document.getElementById('file-name').textContent = 'デフォルトデータを使用';
+            showSection('settings-section');
+        });
+
+        // 戻るボタン
+        document.getElementById('back-to-file').addEventListener('click', function() {
+            showSection('file-select-section');
+        });
+
+        document.getElementById('back-to-settings').addEventListener('click', function() {
+            showSection('settings-section');
+        });
+
+        // モード選択
+        document.getElementById('sequential-mode').addEventListener('click', function() {
+            document.getElementById('sequential-mode').classList.add('active');
+            document.getElementById('random-mode').classList.remove('active');
+            state.isRandomMode = false;
+        });
+
+        document.getElementById('random-mode').addEventListener('click', function() {
+            document.getElementById('random-mode').classList.add('active');
+            document.getElementById('sequential-mode').classList.remove('active');
+            state.isRandomMode = true;
+        });
+
+        // 学習開始
+        document.getElementById('start-learning').addEventListener('click', function() {
+            if (state.flashcards.length === 0) {
+                alert('学習データが読み込まれていません。データを選択してください。');
+                return;
+            }
+            
+            // 元の順序を保存
+            state.originalOrder = [...state.flashcards];
+            
+            // ランダムモードの場合、カードをシャッフル
+            if (state.isRandomMode) {
+                shuffleFlashcards();
+            }
+            
+            state.currentIndex = 0;
+            updateCard();
+            showSection('flashcard-section');
+        });
+
+        // カードシャッフル関数
+        function shuffleFlashcards() {
+            for (let i = state.flashcards.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [state.flashcards[i], state.flashcards[j]] = [state.flashcards[j], state.flashcards[i]];
+            }
+        }
+
+        // カード更新
+        function updateCard() {
+            if (state.flashcards.length === 0) return;
+            
+            const card = state.flashcards[state.currentIndex];
+            document.getElementById('card-word').textContent = card.english;
+            document.getElementById('card-meaning').textContent = card.japanese;
+            
+            // カードが裏返っていたら表に戻す
+            document.getElementById('card').classList.remove('flipped');
+            
+            // 進捗の更新
+            document.getElementById('card-counter').textContent = `${state.currentIndex + 1}/${state.flashcards.length}`;
+            const progressPercent = ((state.currentIndex + 1) / state.flashcards.length) * 100;
+            document.getElementById('progress-fill').style.width = `${progressPercent}%`;
+            
+            // ボタンの状態を更新
+            document.getElementById('prev-btn').disabled = state.currentIndex === 0;
+            document.getElementById('next-btn').disabled = state.currentIndex === state.flashcards.length - 1;
+        }
+
+        // カードを裏返す
+        document.getElementById('flip-btn').addEventListener('click', function() {
+            document.getElementById('card').classList.toggle('flipped');
+        });
+
+        // カードをタップして裏返す
+        document.getElementById('card').addEventListener('click', function() {
+            this.classList.toggle('flipped');
+        });
+
+        // 前のカード
+        document.getElementById('prev-btn').addEventListener('click', function() {
+            if (state.currentIndex > 0) {
+                state.currentIndex--;
+                updateCard();
+            }
+        });
+
+        // 次のカード
+        document.getElementById('next-btn').addEventListener('click', function() {
+            if (state.currentIndex < state.flashcards.length - 1) {
+                state.currentIndex++;
+                updateCard();
+            }
+        });
+
+        // キーボードショートカット
+        document.addEventListener('keydown', function(e) {
+            if (state.currentSection !== 'flashcard-section') return;
+            
+            switch(e.key) {
+                case 'ArrowLeft':
+                    document.getElementById('prev-btn').click();
+                    break;
+                case 'ArrowRight':
+                    document.getElementById('next-btn').click();
+                    break;
+                case ' ':
+                case 'Enter':
+                    e.preventDefault();
+                    document.getElementById('flip-btn').click();
+                    break;
+            }
+        });
+
+        // 初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            // アニメーションクラスを追加
+            document.querySelectorAll('.app-section').forEach(section => {
+                section.classList.add('fade-in');
+            });
+        });
+    </script>
+</body>
+</html>
