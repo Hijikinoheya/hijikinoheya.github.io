@@ -339,6 +339,37 @@
             color: #d32f2f;
         }
 
+        /* キーボード操作ヒント */
+        .keyboard-hint {
+            text-align: center;
+            margin: 15px 0;
+            font-size: 0.9rem;
+            color: #666;
+            background-color: #f8f9ff;
+            padding: 12px;
+            border-radius: 10px;
+            border-left: 4px solid #3949ab;
+        }
+
+        .keyboard-keys {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .keyboard-key {
+            background-color: #1a237e;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-weight: 600;
+            font-size: 0.9rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
         /* 正解/不正解ボタン */
         .answer-buttons {
             display: flex;
@@ -868,6 +899,20 @@
             .modal-details-grid {
                 grid-template-columns: 1fr;
             }
+            
+            .keyboard-hint {
+                font-size: 0.8rem;
+                padding: 10px;
+            }
+            
+            .keyboard-keys {
+                gap: 6px;
+            }
+            
+            .keyboard-key {
+                font-size: 0.8rem;
+                padding: 3px 8px;
+            }
         }
 
         @media (max-width: 480px) {
@@ -1029,13 +1074,24 @@
                     <div class="card-front">
                         <div class="card-word" id="card-word">単語</div>
                         <div class="card-example" id="card-example"></div>
-                        <div class="card-hint">タップして意味を表示</div>
+                        <div class="card-hint">Spaceまたはクリックで裏返し</div>
                     </div>
                     <div class="card-back">
                         <div class="card-meaning" id="card-meaning">意味</div>
                         <div class="card-example" id="card-example-back"></div>
-                        <div class="card-hint">タップして単語を表示</div>
+                        <div class="card-hint">Spaceまたはクリックで表に戻す</div>
                     </div>
+                </div>
+            </div>
+            
+            <div class="keyboard-hint">
+                <div>キーボード操作:</div>
+                <div class="keyboard-keys">
+                    <span class="keyboard-key">Space</span> 答え表示
+                    <span class="keyboard-key">← →</span> カード移動
+                    <span class="keyboard-key">↑ or N</span> 正解
+                    <span class="keyboard-key">↓ or M</span> 不正解
+                    <span class="keyboard-key">ESC</span> 学習終了
                 </div>
             </div>
             
@@ -2214,27 +2270,40 @@
         document.addEventListener('keydown', function(e) {
             if (state.currentSection !== 'flashcard-section') return;
             
+            // キーの説明を表示（デバッグ用）
+            // console.log('Key pressed:', e.key);
+            
             switch(e.key) {
                 case 'ArrowLeft':
+                    e.preventDefault();
                     document.getElementById('prev-btn').click();
                     break;
                 case 'ArrowRight':
-                case ' ':
+                    e.preventDefault();
                     document.getElementById('next-btn').click();
+                    break;
+                case ' ':
+                    e.preventDefault();
+                    document.getElementById('flip-btn').click();
                     break;
                 case 'Enter':
                     e.preventDefault();
                     document.getElementById('flip-btn').click();
                     break;
-                case '1':
-                case 'c':
+                case 'ArrowUp':
+                case 'n':
+                case 'N':
+                    e.preventDefault();
                     document.getElementById('correct-btn').click();
                     break;
-                case '2':
-                case 'i':
+                case 'ArrowDown':
+                case 'm':
+                case 'M':
+                    e.preventDefault();
                     document.getElementById('incorrect-btn').click();
                     break;
                 case 'Escape':
+                    e.preventDefault();
                     document.getElementById('finish-session').click();
                     break;
             }
